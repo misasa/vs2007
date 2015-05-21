@@ -20,7 +20,8 @@ This is a command-line user interface for VisualStage2007.""",
       install_requires=[
           # -*- Extra requirements: -*-
       ],
-      entry_points="""
-      # -*- Entry points: -*-
-      """,
+      entry_points={
+            "console_scripts": [
+                  "vs2007-control = vs2007.control:main",
+            ]},
       )
