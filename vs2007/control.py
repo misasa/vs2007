@@ -1,4 +1,9 @@
 #!/usr/bin/env python
+try:
+	from vs2007 import VS2007Process
+except ImportError:
+	pass
+
 import shlex, subprocess
 import time
 import os
@@ -8,6 +13,7 @@ import psutil
 import re
 import win32ui, win32api, ctypes
 from optparse import OptionParser
+import argparse
 from ctypes import wintypes
 import struct
 global exe_name
@@ -95,6 +101,24 @@ def get_strings(ADDRESS, SIZE, pid = get_pid()):
 	bytes_read = ctypes.c_size_t()
 	process = win32api.OpenProcess(PROCESS_ALL_ACCESS,0,pid)
 	rPM(process.handle, ADDRESS, ADDRESS2,SIZE,ctypes.byref(bytes_read))
+	return ADDRESS2.value
+
+def read_string_from_process_memory(pid, address0):
+	PROCESS_ALL_ACCESS = 0x1F0FFF
+	SIZE = 260
+	ADDRESS2 = ctypes.create_string_buffer(SIZE)
+	bytes_read = ctypes.c_size_t()
+	process = win32api.OpenProcess(PROCESS_ALL_ACCESS, 0, pid)
+	rPM(process.handle, address0, ADDRESS2, SIZE, ctypes.byref(bytes_read))
+	return ADDRESS2.value
+
+def get_version(pid = get_pid()):
+	ADDRESS0 = 0x00475A48
+	SIZE = 260
+	ADDRESS2 = ctypes.create_string_buffer(SIZE)
+	bytes_read = ctypes.c_size_t()
+	process = win32api.OpenProcess(PROCESS_ALL_ACCESS,0,pid)
+	rPM(process.handle, ADDRESS0, ADDRESS2,SIZE,ctypes.byref(bytes_read))
 	return ADDRESS2.value
 
 
@@ -289,7 +313,40 @@ def inject_dll():
 
 		print "[*] Remote thread with ID 0x%08x created." % thread_id.value
 
+def _start(args):
+	VS2007Process.start()
+
+def _stop(args):
+	VS2007Process.stop()
+
+def _parse_options():
+#	parser = OptionParser("usage: %prog [options] (start|stop|restart|status|inject|pwd|export <address|attach>)")
+#	parser.add_option("-v","--verbose",action="store_true",dest="verbose",default=False,help="make lots of noise")
+#	(options, args) = parser.parse_args()
+#	if not len(args) >= 1:
+#	    parser.error("incorrect number of arguments")
+#	    sys.exit()
+#	command = args.pop(0)
+#	return options, command, args
+	parser = argparse.ArgumentParser(prog='vs2007')
+	parser.add_argument('--verbose', action='store_true', help='make lots of noise')
+	subparsers = parser.add_subparsers(dest='subparser_name')
+
+	parser_start = subparsers.add_parser('start')
+	parser_start.set_defaults(func=_start)
+
+	parser_start = subparsers.add_parser('stop')
+	parser_start.set_defaults(func=_stop)
+
+	args = parser.parse_args()
+	return args
+
 def main():
+	args = _parse_options()
+	args.func(args)
+#	sys.exit()
+
+def main_old():
 	exe_path = get_exe_path().replace('\\','/')
 
 	if exe_path == None:
