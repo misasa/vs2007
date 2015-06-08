@@ -328,7 +328,7 @@ def _parse_options():
 #	    sys.exit()
 #	command = args.pop(0)
 #	return options, command, args
-	parser = argparse.ArgumentParser(prog='vs2007')
+	parser = argparse.ArgumentParser(prog='vs2007-ctrl')
 	parser.add_argument('--verbose', action='store_true', help='make lots of noise')
 	subparsers = parser.add_subparsers(dest='subparser_name')
 
