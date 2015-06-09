@@ -327,7 +327,8 @@ def _open(args):
 
 def _pwd(args):
 	vs2007p = vs2007.VS2007Process()
-	vs2007p.pwd()
+	pwd = vs2007p.pwd()
+	print pwd
 
 def _parse_options():
 #	parser = OptionParser("usage: %prog [options] (start|stop|restart|status|inject|pwd|export <address|attach>)")
