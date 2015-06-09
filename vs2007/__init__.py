@@ -108,7 +108,7 @@ class VS2007API(object):
 		if self.g_hVSWnd == None:
 			self.GetVSHVSWND(timeout)
 
-	def send_command_and_receive_message(self, command_line, timeout):
+	def send_command_and_receive_message(self, command_line, timeout = 0):
 		try:
 			r = self.SendCommand(command_line, timeout)
 			if r:
@@ -187,11 +187,12 @@ class VS2007Process(object):
 	@classmethod
 	def stop(cls):
 		def on_terminate(proc):
-			print "SUCCESS"
-
+			pass
+#			print "SUCCESS"
+			
 		pid = cls.get_pid()
 		if pid == None:
-			print "%s is not running" % cls.exe_name
+#			print "%s is not running" % cls.exe_name
 			return
 		proc = psutil.Process(pid)
 		proc.terminate()
@@ -205,10 +206,15 @@ class VS2007Process(object):
 			p = psutil.Process(pid)
 			try:
 				if p.name() == cls.exe_name:
-					print p
 					return pid
 			except psutil.AccessDenied:
 				pass
+
+	def __new__(cls, *args, **kw):
+		if not hasattr(cls, '_instance'):
+			orig = super(VS2007Process, cls)
+			cls._instance = orig.__new__(cls, *args, **kw)
+		return cls._instance
 
 	def __init__(self, *args, **kw):
 		#pass
@@ -227,7 +233,6 @@ class VS2007Process(object):
 
 	def _get_version(self):
 		if self._version == None:
-			print 'version getting...'
 			version = self.read_string_from_process_memory(0x00475A48)
 			if version == '':
 				version = self.read_string_from_process_memory(0x00478AF8)
@@ -261,6 +266,24 @@ class VS2007Process(object):
 		self._process = value
 
 	process = property(_get_process, _set_process)
+
+
+	def open_file(self, path, flag = False):
+		if os.path.isabs(path):
+			path = os.path.abspath(path)
+
+		if os.path.isdir(path):
+			path = os.path.join(path, 'ADDRESS.DAT')
+
+		if not os.path.isfile(path):
+			raise ValueError("invalid path")
+
+		dirname = os.path.dirname(path)
+		datadir = os.path.dirname(dirname)
+		dataname = os.path.basename(dirname)
+		command = "FILE_OPEN %s,%s,%s" % (datadir, dataname, 'YES' if flag else 'NO')
+		return self.api.send_command_and_receive_message(command)
+		#self.api_send(command)
 
 	def get_value(self, ADDRESS, buf = ctypes.c_ulong()):
 		bytes_read = ctypes.c_size_t()

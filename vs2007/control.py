@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 try:
+	import vs2007
 	from vs2007 import VS2007Process
 except ImportError:
 	pass
@@ -314,10 +315,19 @@ def inject_dll():
 		print "[*] Remote thread with ID 0x%08x created." % thread_id.value
 
 def _start(args):
-	VS2007Process.start()
+	vs2007.VS2007Process.start()
 
 def _stop(args):
-	VS2007Process.stop()
+	vs2007.VS2007Process.stop()
+
+def _open(args):
+	vs2007.VS2007Process.start()
+	vs2007p = vs2007.VS2007Process()
+	vs2007p.open_file(args.path)
+
+def _pwd(args):
+	vs2007p = vs2007.VS2007Process()
+	vs2007p.pwd()
 
 def _parse_options():
 #	parser = OptionParser("usage: %prog [options] (start|stop|restart|status|inject|pwd|export <address|attach>)")
@@ -337,6 +347,14 @@ def _parse_options():
 
 	parser_start = subparsers.add_parser('stop')
 	parser_start.set_defaults(func=_stop)
+
+	parser_open = subparsers.add_parser('open')
+	parser_open.add_argument('path')
+	parser_open.set_defaults(func=_open)
+
+	parser_pwd = subparsers.add_parser('pwd')
+	parser_pwd.set_defaults(func=_pwd)
+
 
 	args = parser.parse_args()
 	return args

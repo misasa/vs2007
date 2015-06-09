@@ -44,31 +44,38 @@ def test_options():
 	assert_equals(args.verbose, True)
 	assert_equals(args.subparser_name, 'start')
 
-def setup_start():
-	global original_method
-	original_method = VS2007Process.start
-	VS2007Process.start = MagicMock(return_value = 1100 )	
+def setup_mocks():
+	vs2007._VS2007Process = vs2007.VS2007Process
+	global mock_vs2007p
+	mock_vs2007p = MagicMock(return_value = None)
+	vs2007.VS2007Process = MagicMock(return_value = mock_vs2007p)
 
-def teardown_start():
-	VS2007Process.start = original_method
+def teardown_mocks():
+	vs2007.VS2007Process = vs2007._VS2007Process
+	delattr(vs2007, '_VS2007Process')
 
-@with_setup(setup_start, teardown_start)
-def test_start():
-	sys.argv = ['vs2007', '--verbose', 'start']
+@with_setup(setup_mocks, teardown_mocks)
+def test_open():
+	path = 'C:\\VS2007data\\GrtCCG06'
+	sys.argv = ['vs2007', 'open', path]
 	main()
-	VS2007Process.start.assert_called_once
+	vs2007.VS2007Process.start.assert_called_once_with()
+	mock_vs2007p.open_file.assert_called_once_with(path)
 
-
-def setup_stop():
-	global original_method
-	original_method = VS2007Process.stop
-	VS2007Process.stop = MagicMock(return_value = 1100 )	
-
-def teardown_stop():
-	VS2007Process.stop = original_method
-
-@with_setup(setup_stop, teardown_stop)
+@with_setup(setup_mocks, teardown_mocks)
 def test_stop():
 	sys.argv = ['vs2007', '--verbose', 'stop']
 	main()
-	VS2007Process.stop.assert_called_once
+	vs2007.VS2007Process.stop.assert_called_once_with()
+
+@with_setup(setup_mocks, teardown_mocks)
+def test_start():
+	sys.argv = ['vs2007', '--verbose', 'start']
+	main()
+	vs2007.VS2007Process.start.assert_called_once_with()
+
+@with_setup(setup_mocks, teardown_mocks)
+def test_pwd():
+	sys.argv = ['vs2007', '--verbose', 'pwd']
+	main()
+	mock_vs2007p.pwd.assert_called_once_with()

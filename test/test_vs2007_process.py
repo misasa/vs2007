@@ -2,6 +2,7 @@ import sys
 import os
 import unittest
 from nose.tools import *
+from mock import MagicMock
 from vs2007 import VS2007Process
 from vs2007 import VS2007API
 from vs2007.control import *
@@ -11,7 +12,6 @@ pid = None
 vs2007p = None
 
 def setup():
-	print "setup..."
 	global saved
 	saved = sys.argv
 	start_vs()
@@ -25,8 +25,17 @@ def setup_112():
 	global pid
 	pid = get_pid()
 
+def setup_mock_api():
+	global original_api
+	original_api = vs2007p.api.send_command_and_receive_message
+	vs2007p.api.send_command_and_receive_message = MagicMock(return_value = 'SUCCESS' )	
+
+
+def teardown_mock_api():
+	vs2007p.api.send_command_and_receive_message = original_api
+
+
 def teardown():
-	print "teardown..."
 	stop_vs()
 	sys.argv = saved
 
@@ -37,13 +46,33 @@ def start_vs():
 	vs2007p = VS2007Process()
 
 def stop_vs():
-	print 'vs stopping...'
 	VS2007Process.stop()
 
 def test_api():
 	command = 'TEST_CMD'
 	message = vs2007p.api.send_command_and_receive_message(command, 0)
 	assert_equal(message, 'SUCCESS')
+
+@with_setup(setup_mock_api, teardown_mock_api)
+def test_open_file_with_full_dirpath():
+	path = 'C:\\VS2007data'
+	dataname = 'GrtCCG06'
+	message = vs2007p.open_file(os.path.join(path, dataname))
+	vs2007p.api.send_command_and_receive_message.assert_called_once_with('FILE_OPEN C:\\VS2007data,GrtCCG06,NO')
+	#assert_equal(message, 'SUCCESS')
+
+@with_setup(setup_mock_api, teardown_mock_api)
+def test_open_file_with_full_filepath():
+	path = 'C:\\VS2007data'
+	dataname = 'GrtCCG06'
+	message = vs2007p.open_file(os.path.join(path, dataname, 'ADDRESS.DAT'), True)
+	vs2007p.api.send_command_and_receive_message.assert_called_once_with('FILE_OPEN C:\\VS2007data,GrtCCG06,YES')
+
+@with_setup(setup_mock_api, teardown_mock_api)
+def test_open_file_with_invalid_path():
+	path = 'C:\\InvalidPath'
+	dataname = 'GrtCCG06'
+	assert_raises(ValueError, vs2007p.open_file, os.path.join(path, dataname, 'ADDRESS.DAT'), True)
 
 def test_get_path_and_dataname():
 #	VS2007Process.version = '1.120'
