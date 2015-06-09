@@ -1,5 +1,6 @@
 import sys
 import os
+import ntpath
 from nose.tools import *
 import vs2007
 from vs2007 import VS2007Process
@@ -55,12 +56,23 @@ def teardown_mocks():
 	delattr(vs2007, '_VS2007Process')
 
 @with_setup(setup_mocks, teardown_mocks)
-def test_open():
+def test_open_without_process():
 	path = 'C:\\VS2007data\\GrtCCG06'
 	sys.argv = ['vs2007', 'open', path]
+	vs2007.VS2007Process.is_running = MagicMock(return_value = False)
 	main()
 	vs2007.VS2007Process.start.assert_called_once_with()
 	mock_vs2007p.open_file.assert_called_once_with(path)
+
+@with_setup(setup_mocks, teardown_mocks)
+def test_open_with_process():
+	path = 'C:\\VS2007data\\GrtCCG06'
+	sys.argv = ['vs2007', 'open', path]
+	vs2007.VS2007Process.is_running = MagicMock(return_value = True)
+	main()
+	#vs2007.VS2007Process.start.assert_called_once_with()
+	mock_vs2007p.open_file.assert_called_once_with(path)
+
 
 @with_setup(setup_mocks, teardown_mocks)
 def test_stop():

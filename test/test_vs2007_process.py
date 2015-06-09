@@ -53,6 +53,9 @@ def test_api():
 	message = vs2007p.api.send_command_and_receive_message(command, 0)
 	assert_equal(message, 'SUCCESS')
 
+def test_is_running():
+	assert_equal(VS2007Process.is_running(), True)
+
 @with_setup(setup_mock_api, teardown_mock_api)
 def test_open_file_with_full_dirpath():
 	path = 'C:\\VS2007data'
@@ -64,6 +67,20 @@ def test_open_file_with_full_dirpath():
 @with_setup(setup_mock_api, teardown_mock_api)
 def test_open_file_with_full_filepath():
 	path = 'C:\\VS2007data'
+	dataname = 'GrtCCG06'
+	message = vs2007p.open_file(os.path.join(path, dataname, 'ADDRESS.DAT'), True)
+	vs2007p.api.send_command_and_receive_message.assert_called_once_with('FILE_OPEN C:\\VS2007data,GrtCCG06,YES')
+
+@with_setup(setup_mock_api, teardown_mock_api)
+def test_open_file_with_full_cygpath():
+	path = '/cygdrive/c/VS2007data'
+	dataname = 'GrtCCG06'
+	message = vs2007p.open_file(os.path.join(path, dataname, 'ADDRESS.DAT'), True)
+	vs2007p.api.send_command_and_receive_message.assert_called_once_with('FILE_OPEN C:\\VS2007data,GrtCCG06,YES')
+
+@with_setup(setup_mock_api, teardown_mock_api)
+def test_open_file_with_full_msyspath():
+	path = '/c/VS2007data'
 	dataname = 'GrtCCG06'
 	message = vs2007p.open_file(os.path.join(path, dataname, 'ADDRESS.DAT'), True)
 	vs2007p.api.send_command_and_receive_message.assert_called_once_with('FILE_OPEN C:\\VS2007data,GrtCCG06,YES')
@@ -94,3 +111,6 @@ def test_get_addresslist_with_open():
 @with_setup(None, teardown)
 def test_stop():
 	pass
+
+def test_is_running():
+	assert_equal(VS2007Process.is_running(), False)

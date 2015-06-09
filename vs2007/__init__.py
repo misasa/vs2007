@@ -1,8 +1,10 @@
 #
 import shlex, subprocess
+import ntpath
 import time
 import os
 import sys
+import re
 import psutil
 import win32ui, win32api, ctypes
 import win32api, win32con, win32gui
@@ -157,6 +159,11 @@ class VS2007Process(object):
 				return realpath.replace('\\', '/')
 
 	@classmethod
+	def is_running(cls):
+		pid = cls.get_pid()
+		return not pid == None
+
+	@classmethod
 	def start(cls):
 		pid = cls.get_pid()
 		if not pid == None:
@@ -199,6 +206,28 @@ class VS2007Process(object):
 		gone, alive = psutil.wait_procs([proc], timeout = 15, callback=on_terminate)
 		for p in alive:
 			p.kill()
+
+	@classmethod
+	def _drive_with_path(cls, drive = 'C', path = ''):
+		return drive.upper() + ':\\' + path
+
+	@classmethod
+	def _ntpath(cls, path):
+		p = re.compile('/cygdrive/([A-Za-z])/(.+)')
+		m = p.match(path)
+		if m:
+			path = cls._drive_with_path(m.group(1), m.group(2))
+			#drive = m.group(1)
+			#path = drive + ':\\' + m.group(2)
+
+		p = re.compile('/([A-Za-z])/(.+)')
+		m = p.match(path)
+		if m:
+			path = cls._drive_with_path(m.group(1), m.group(2))
+			#drive = m.group(1)
+			#path = drive + ':\\' + m.group(2)
+
+		return ntpath.abspath(path)
 
 	@classmethod
 	def get_pid(cls):
@@ -269,9 +298,9 @@ class VS2007Process(object):
 
 
 	def open_file(self, path, flag = False):
-		if os.path.isabs(path):
-			path = os.path.abspath(path)
-
+		path = self._ntpath(path)
+#		if os.path.isabs(path):
+#			path = os.path.abspath(path)
 		if os.path.isdir(path):
 			path = os.path.join(path, 'ADDRESS.DAT')
 

@@ -5,6 +5,7 @@ try:
 except ImportError:
 	pass
 
+import ntpath
 import shlex, subprocess
 import time
 import os
@@ -314,6 +315,9 @@ def inject_dll():
 
 		print "[*] Remote thread with ID 0x%08x created." % thread_id.value
 
+def _process():
+	return vs2007.VS2007Process()
+
 def _start(args):
 	vs2007.VS2007Process.start()
 
@@ -321,14 +325,16 @@ def _stop(args):
 	vs2007.VS2007Process.stop()
 
 def _open(args):
-	vs2007.VS2007Process.start()
+	if not vs2007.VS2007Process.is_running():
+		vs2007.VS2007Process.start()
 	vs2007p = vs2007.VS2007Process()
 	vs2007p.open_file(args.path)
 
 def _pwd(args):
-	vs2007p = vs2007.VS2007Process()
-	pwd = vs2007p.pwd()
-	print pwd
+	if vs2007.VS2007Process.is_running():
+		vs2007p = _process()
+		pwd = vs2007p.pwd()
+		print pwd
 
 def _parse_options():
 #	parser = OptionParser("usage: %prog [options] (start|stop|restart|status|inject|pwd|export <address|attach>)")
