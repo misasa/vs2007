@@ -2,5 +2,4 @@
 *.egg-info/
 *.egg
 build
-dist
 tmp
