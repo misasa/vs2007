@@ -328,7 +328,7 @@ class VS2007Process(object):
 
 	api = property(_get_api, _set_api)
 
-	def open_file(self, path, flag = False):
+	def file_open(self, path, flag = False):
 		path = self._ntpath(path)
 #		if os.path.isabs(path):
 #			path = os.path.abspath(path)
@@ -343,7 +343,15 @@ class VS2007Process(object):
 		dataname = os.path.basename(dirname)
 		command = "FILE_OPEN %s,%s,%s" % (datadir, dataname, 'YES' if flag else 'NO')
 		return self.api.send_command_and_receive_message(command)
-		#self.api_send(command)
+	
+	def file_save(self):
+		command = 'FILE_SAVE'
+		return self.api.send_command_and_receive_message(command)		
+
+	def file_close(self, flag = False):		
+		command = "FILE_CLOSE %s" % ('YES' if flag else 'NO')
+		return self.api.send_command_and_receive_message(command)
+
 
 	def get_value(self, ADDRESS, buf = ctypes.c_ulong()):
 		bytes_read = ctypes.c_size_t()

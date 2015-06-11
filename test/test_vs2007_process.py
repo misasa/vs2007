@@ -54,7 +54,7 @@ def test_api():
 	assert_equal(message, 'SUCCESS')
 	message = vs2007p.send_command(command)
 	assert_equal(message, 'SUCCESS')
-	
+
 
 
 def test_is_running():
@@ -64,7 +64,7 @@ def test_is_running():
 def test_open_file_with_full_dirpath():
 	path = 'C:\\VS2007data'
 	dataname = 'GrtCCG06'
-	message = vs2007p.open_file(os.path.join(path, dataname))
+	message = vs2007p.file_open(os.path.join(path, dataname))
 	vs2007p.api.send_command_and_receive_message.assert_called_once_with('FILE_OPEN C:\\VS2007data,GrtCCG06,NO')
 	#assert_equal(message, 'SUCCESS')
 
@@ -72,28 +72,43 @@ def test_open_file_with_full_dirpath():
 def test_open_file_with_full_filepath():
 	path = 'C:\\VS2007data'
 	dataname = 'GrtCCG06'
-	message = vs2007p.open_file(os.path.join(path, dataname, 'ADDRESS.DAT'), True)
+	message = vs2007p.file_open(os.path.join(path, dataname, 'ADDRESS.DAT'), True)
 	vs2007p.api.send_command_and_receive_message.assert_called_once_with('FILE_OPEN C:\\VS2007data,GrtCCG06,YES')
 
 @with_setup(setup_mock_api, teardown_mock_api)
 def test_open_file_with_full_cygpath():
 	path = '/cygdrive/c/VS2007data'
 	dataname = 'GrtCCG06'
-	message = vs2007p.open_file(os.path.join(path, dataname, 'ADDRESS.DAT'), True)
+	message = vs2007p.file_open(os.path.join(path, dataname, 'ADDRESS.DAT'), True)
 	vs2007p.api.send_command_and_receive_message.assert_called_once_with('FILE_OPEN C:\\VS2007data,GrtCCG06,YES')
 
 @with_setup(setup_mock_api, teardown_mock_api)
 def test_open_file_with_full_msyspath():
 	path = '/c/VS2007data'
 	dataname = 'GrtCCG06'
-	message = vs2007p.open_file(os.path.join(path, dataname, 'ADDRESS.DAT'), True)
+	message = vs2007p.file_open(os.path.join(path, dataname, 'ADDRESS.DAT'), True)
 	vs2007p.api.send_command_and_receive_message.assert_called_once_with('FILE_OPEN C:\\VS2007data,GrtCCG06,YES')
 
 @with_setup(setup_mock_api, teardown_mock_api)
 def test_open_file_with_invalid_path():
 	path = 'C:\\InvalidPath'
 	dataname = 'GrtCCG06'
-	assert_raises(ValueError, vs2007p.open_file, os.path.join(path, dataname, 'ADDRESS.DAT'), True)
+	assert_raises(ValueError, vs2007p.file_open, os.path.join(path, dataname, 'ADDRESS.DAT'), True)
+
+@with_setup(setup_mock_api, teardown_mock_api)
+def test_close_file():
+	message = vs2007p.file_close()
+	vs2007p.api.send_command_and_receive_message.assert_called_once_with('FILE_CLOSE NO')
+
+@with_setup(setup_mock_api, teardown_mock_api)
+def test_close_file_with_flag():
+	message = vs2007p.file_close(True)
+	vs2007p.api.send_command_and_receive_message.assert_called_once_with('FILE_CLOSE YES')
+
+@with_setup(setup_mock_api, teardown_mock_api)
+def test_save_file():
+	message = vs2007p.file_save()
+	vs2007p.api.send_command_and_receive_message.assert_called_once_with('FILE_SAVE')
 
 def test_get_path_and_dataname():
 #	VS2007Process.version = '1.120'

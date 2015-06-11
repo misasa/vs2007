@@ -55,6 +55,10 @@ def teardown_mocks():
 	vs2007.VS2007Process = vs2007._VS2007Process
 	delattr(vs2007, '_VS2007Process')
 
+def test_help():
+	sys.argv = ['vs', '--help']
+	assert_raises(SystemExit, _parse_options)
+
 @with_setup(setup_mocks, teardown_mocks)
 def test_open_without_process():
 	path = 'C:\\VS2007data\\GrtCCG06'
@@ -62,7 +66,7 @@ def test_open_without_process():
 	vs2007.VS2007Process.is_running = MagicMock(return_value = False)
 	main()
 	vs2007.VS2007Process.start.assert_called_once_with()
-	mock_vs2007p.open_file.assert_called_once_with(path)
+	mock_vs2007p.file_open.assert_called_once_with(path)
 
 @with_setup(setup_mocks, teardown_mocks)
 def test_open_with_process():
@@ -71,7 +75,7 @@ def test_open_with_process():
 	vs2007.VS2007Process.is_running = MagicMock(return_value = True)
 	main()
 	#vs2007.VS2007Process.start.assert_called_once_with()
-	mock_vs2007p.open_file.assert_called_once_with(path)
+	mock_vs2007p.file_open.assert_called_once_with(path)
 
 
 @with_setup(setup_mocks, teardown_mocks)
@@ -91,3 +95,15 @@ def test_pwd():
 	sys.argv = ['vs2007', '--verbose', 'pwd']
 	main()
 	mock_vs2007p.pwd.assert_called_once_with()
+
+@with_setup(setup_mocks, teardown_mocks)
+def test_close():
+	sys.argv = ['vs2007', 'close']
+	main()
+	mock_vs2007p.file_close.assert_called_once_with()
+
+@with_setup(setup_mocks, teardown_mocks)
+def test_save():
+	sys.argv = ['vs2007', 'save']
+	main()
+	mock_vs2007p.file_save.assert_called_once_with()

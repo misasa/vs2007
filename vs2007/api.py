@@ -7,6 +7,7 @@ try:
 except ImportError:
     pass
 
+prog = "vs-api"
 def _process():
     return vs2007.VS2007Process()
 

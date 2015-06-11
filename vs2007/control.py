@@ -327,8 +327,16 @@ def _stop(args):
 def _open(args):
 	if not vs2007.VS2007Process.is_running():
 		vs2007.VS2007Process.start()
-	vs2007p = vs2007.VS2007Process()
-	vs2007p.open_file(args.path)
+	#vs2007p = vs2007.VS2007Process()
+	_process().file_open(args.path)
+
+def _close(args):
+	if vs2007.VS2007Process.is_running():
+		_process().file_close()		
+
+def _save(args):
+	if vs2007.VS2007Process.is_running():
+		_process().file_save()
 
 def _pwd(args):
 	if vs2007.VS2007Process.is_running():
@@ -345,7 +353,7 @@ def _parse_options():
 #	    sys.exit()
 #	command = args.pop(0)
 #	return options, command, args
-	parser = argparse.ArgumentParser(prog='vs2007-ctrl')
+	parser = argparse.ArgumentParser(prog='vs')
 	parser.add_argument('--verbose', action='store_true', help='make lots of noise')
 	subparsers = parser.add_subparsers(dest='subparser_name')
 
@@ -361,6 +369,12 @@ def _parse_options():
 
 	parser_pwd = subparsers.add_parser('pwd')
 	parser_pwd.set_defaults(func=_pwd)
+
+	parser_close = subparsers.add_parser('close')
+	parser_close.set_defaults(func=_close)
+
+	parser_save = subparsers.add_parser('save')
+	parser_save.set_defaults(func=_save)
 
 
 	args = parser.parse_args()

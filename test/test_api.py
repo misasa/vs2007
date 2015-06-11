@@ -25,6 +25,10 @@ def teardown_mocks():
 	vs2007.VS2007Process = vs2007._VS2007Process
 	delattr(vs2007, '_VS2007Process')
 
+def test_help():
+	sys.argv = ['vs-api', '--help']
+	assert_raises(SystemExit, _parse_options)
+
 
 def test_options():
 	sys.argv = ['vs2007api', '--verbose', 'TEST_CMD']
