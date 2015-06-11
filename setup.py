@@ -23,6 +23,6 @@ This is a command-line user interface for VisualStage2007.""",
       entry_points={
             "console_scripts": [
                   "vs2007 = vs2007.control:main",
-                  "vs2007api = vs2007.api:main",
+#                  "vs2007api = vs2007.api:main",
             ]},
       )
