@@ -1,11 +1,7 @@
 #!/usr/bin/env python
 from optparse import OptionParser
 import sys
-try:
-    import vs2007
-    #from vs2007 import VS2007Process
-except ImportError:
-    pass
+import vs2007
 
 prog = "vs-api"
 def _process():

@@ -3,9 +3,10 @@ import os
 import unittest
 from nose.tools import *
 from mock import MagicMock
+import vs2007
 from vs2007 import VS2007Process
 from vs2007 import VS2007API
-from vs2007.control import *
+#from vs2007.control import *
 
 saved = None
 pid = None
@@ -16,7 +17,6 @@ def setup():
 	saved = sys.argv
 	start_vs()
 	global pid
-	pid = get_pid()
 
 def setup_112():
 	global saved

@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import sys, os
 
-version = '0.0.9'
+version = '0.1.0'
 
 setup(name='vs2007',
       version=version,

@@ -109,14 +109,14 @@ def test_save():
 	mock_vs2007p.file_save.assert_called_once_with()
 
 @with_setup(setup_mocks, teardown_mocks)
-def test_export_help():
-	sys.argv = ['vs', 'export', '-h']
+def test_list_help():
+	sys.argv = ['vs', 'list', '-h']
 	assert_raises(SystemExit, _parse_options)
 	#mock_vs2007p.list_address.assert_called_once_with()
 
 @with_setup(setup_mocks, teardown_mocks)
-def test_export_address():
-	sys.argv = ['vs', 'export', 'address']
+def test_list_address():
+	sys.argv = ['vs', 'list', 'address']
 	mock_address = MagicMock(return_value = None)
 	mock_vs2007p.get_address_list = MagicMock(return_value = [mock_address])
 	main()
@@ -124,14 +124,14 @@ def test_export_address():
 	mock_address.to_s.assert_called_once_with()
 
 @with_setup(setup_mocks, teardown_mocks)
-def test_export_address_with_index():
-	sys.argv = ['vs', 'export', 'address', '453']
+def test_list_address_with_index():
+	sys.argv = ['vs', 'list', 'address', '453']
 	main()
 	mock_vs2007p.get_address_list.assert_called_once_with(453)
 
 @with_setup(setup_mocks, teardown_mocks)
-def test_export_attach():
-	sys.argv = ['vs', 'export', 'attach']
+def test_list_attach():
+	sys.argv = ['vs', 'list', 'attach']
 	mock_address = MagicMock(return_value = None)
 	mock_attach = MagicMock(return_value = None)
 	mock_address.get_attachlist = MagicMock(return_value = [mock_attach])
