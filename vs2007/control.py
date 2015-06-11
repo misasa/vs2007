@@ -344,6 +344,17 @@ def _pwd(args):
 		pwd = vs2007p.pwd()
 		print pwd
 
+def _export(args):
+	if vs2007.VS2007Process.is_running():
+		addrl = _process().get_address_list(args.index)
+		for addr in addrl:		
+			if args.address_or_attach == 'address':
+				print addr.to_s()
+			elif args.address_or_attach == 'attach':
+				for attach in addr.get_attachlist():
+					print attach.to_s()
+
+
 def _parse_options():
 #	parser = OptionParser("usage: %prog [options] (start|stop|restart|status|inject|pwd|export <address|attach>)")
 #	parser.add_option("-v","--verbose",action="store_true",dest="verbose",default=False,help="make lots of noise")
@@ -376,6 +387,10 @@ def _parse_options():
 	parser_save = subparsers.add_parser('save')
 	parser_save.set_defaults(func=_save)
 
+	parser_export = subparsers.add_parser('export')
+	parser_export.add_argument('address_or_attach', choices = ['address', 'attach'], help = 'specify address or attach')
+	parser_export.add_argument('index', nargs = '?', type=int, help="specify index of address")
+	parser_export.set_defaults(func=_export)
 
 	args = parser.parse_args()
 	return args

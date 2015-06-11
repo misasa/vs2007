@@ -125,7 +125,13 @@ def test_get_path_and_dataname():
 def test_get_addresslist_with_open():
 	addrl = vs2007p.get_address_list()
 	assert len(addrl) > 0
-	assert len(addrl[0].attachlist) > 0
+	assert len(addrl[0].get_attachlist()) > 0
+	for addr in addrl:
+		print addr.to_s()
+	for addr in addrl:
+		for attach in addr.get_attachlist():
+			print attach.to_s()
+
 
 def test_get_handle():
 #	handle = VS2007Process.get_handle()
