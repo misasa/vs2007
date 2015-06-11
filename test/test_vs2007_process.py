@@ -52,6 +52,10 @@ def test_api():
 	command = 'TEST_CMD'
 	message = vs2007p.api.send_command_and_receive_message(command, 0)
 	assert_equal(message, 'SUCCESS')
+	message = vs2007p.send_command(command)
+	assert_equal(message, 'SUCCESS')
+	
+
 
 def test_is_running():
 	assert_equal(VS2007Process.is_running(), True)
@@ -107,6 +111,12 @@ def test_get_addresslist_with_open():
 	addrl = vs2007p.get_address_list()
 	assert len(addrl) > 0
 	assert len(addrl[0].attachlist) > 0
+
+def test_get_handle():
+#	handle = VS2007Process.get_handle()
+#	vs2007p._set_api(None)
+	vs2007.VS2007Process.set_handle(1111)
+	handle = VS2007Process.get_handle()
 
 @with_setup(None, teardown)
 def test_stop():

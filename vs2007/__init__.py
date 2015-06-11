@@ -56,6 +56,14 @@ class VS2007API(object):
 		cls.g_uiGWM = win32gui.RegisterWindowMessage("VS2007ControlAPI_GMSG_WM_VISUALSTAGE")
 
 	@classmethod
+	def set_handle(cls, handle):
+		cls.g_hVSWnd = handle
+
+	@classmethod
+	def get_handle(cls):
+		return cls.g_hVSWnd
+
+	@classmethod
 	def GetVSHVSWND(cls, timeout):
 		win32gui.SendMessage(win32con.HWND_BROADCAST, cls.g_uiGWM, cls.VS_GET_HWND, cls.g_myhWnd)
 
@@ -239,6 +247,16 @@ class VS2007Process(object):
 			except psutil.AccessDenied:
 				pass
 
+	@classmethod
+	def get_handle(cls):
+		api = VS2007API()
+		return api.g_hVSWnd
+
+	@classmethod
+	def set_handle(cls, handle):
+		api = VS2007API()
+		VS2007API.set_handle(handle)
+
 	def __new__(cls, *args, **kw):
 		if not hasattr(cls, '_instance'):
 			orig = super(VS2007Process, cls)
@@ -252,8 +270,12 @@ class VS2007Process(object):
 		self._pid = None
 		self._version = None
 		self._process = None
-		self.api = VS2007API()
+		self._api = None
+		#self.api = VS2007API()
 
+	def send_command(self, command, timeout = 0):
+		if self.api:
+			return self.api.send_command_and_receive_message(command, timeout)
 
 	def address_for(self, key):
 		dic = self.dic_address_for[key]
@@ -296,6 +318,15 @@ class VS2007Process(object):
 
 	process = property(_get_process, _set_process)
 
+	def _get_api(self):
+		if self._api == None:
+			self._api = VS2007API()
+		return self._api
+
+	def _set_api(self, value):
+		self._api = value
+
+	api = property(_get_api, _set_api)
 
 	def open_file(self, path, flag = False):
 		path = self._ntpath(path)
