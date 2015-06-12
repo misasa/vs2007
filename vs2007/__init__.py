@@ -11,6 +11,8 @@ import win32api, win32con, win32gui
 import pywintypes
 from ctypes import wintypes
 
+__version__ = '0.1.2'
+
 class COPYDATASTRUCT(ctypes.Structure):
     _fields_ = [('dwData',ctypes.c_void_p),("cbData",ctypes.c_void_p),("lpData",ctypes.c_void_p)]
 

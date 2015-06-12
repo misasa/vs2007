@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 import vs2007
 import argparse
+from vs2007 import __version__ as _version
+_progname = 'vs'
 
 def _process():
 	return vs2007.VS2007Process()
@@ -48,14 +50,23 @@ def _list(args):
 				for attach in addr.get_attachlist():
 					print attach.to_s()
 
+def _show_info(args):
+	info = '%s %s' % (_progname, _version)
+	if vs2007.VS2007Process.is_running():
+		info += ' with VisualStage %s' % _process()._get_version()
+	_output(info)
+
 def _output(text):
 	print text
 
 
 def _parse_options():
 	parser = argparse.ArgumentParser(prog='vs')
-	parser.add_argument('--verbose', action='store_true', help='make lots of noise')
+	parser.add_argument('--verbose', action='store_true', help='Run verbosely')
 	subparsers = parser.add_subparsers(dest='subparser_name')
+
+	parser_info = subparsers.add_parser('info')
+	parser_info.set_defaults(func=_show_info)
 
 	parser_start = subparsers.add_parser('start')
 	parser_start.set_defaults(func=_start)
