@@ -54,7 +54,7 @@ def _list(args):
 
 def _show_info(args):
 	info = '%s %s' % (_progname, _version)
-	if vs2007process.VS2007Process.is_running():
+	if vs2007.process.VS2007Process.is_running():
 		info += ' with VisualStage %s' % _process()._get_version()
 	_output(info)
 
