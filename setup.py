@@ -1,7 +1,6 @@
 from setuptools import setup, find_packages
 import sys, os
 from vs2007._version import __version__ as VERSION
-
 #version = '0.1.1'
 
 setup(name='vs2007',
@@ -23,7 +22,7 @@ This is a command-line user interface for VisualStage2007.""",
       ],
       entry_points={
             "console_scripts": [
-                  "vs = vs2007.control:main",
-                  "vs-api = vs2007.api:main",
+                  "vs = vs2007.command_control:main",
+                  "vs-api = vs2007.command_api:main",
             ]},
       )

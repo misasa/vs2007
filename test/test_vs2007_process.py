@@ -4,8 +4,8 @@ import unittest
 from nose.tools import *
 from mock import MagicMock
 import vs2007
-from vs2007 import VS2007Process
-from vs2007 import VS2007API
+from vs2007.process import VS2007Process
+from vs2007.api import VS2007API
 #from vs2007.control import *
 
 saved = None
@@ -136,7 +136,7 @@ def test_get_addresslist_with_open():
 def test_get_handle():
 #	handle = VS2007Process.get_handle()
 #	vs2007p._set_api(None)
-	vs2007.VS2007Process.set_handle(1111)
+	vs2007.process.VS2007Process.set_handle(1111)
 	handle = VS2007Process.get_handle()
 
 @with_setup(None, teardown)

@@ -3,11 +3,11 @@ import os
 import ntpath
 from nose.tools import *
 import vs2007
-from vs2007 import VS2007Process
+from vs2007.process import VS2007Process
 from mock import MagicMock
 import win32api
 
-from vs2007.control import _parse_options, _start, _output, main
+from vs2007.command_control import _parse_options, _start, _output, main
 
 original_metod = None
 original = None
@@ -18,10 +18,10 @@ def setup():
 	global saved
 	saved = sys.argv
 	global original
-	original = vs2007.VS2007Process
+	original = vs2007.process.VS2007Process
 	#win32api.OpenProcess = MagicMock(return_value='process')
 	global vs2007p
-	vs2007p = vs2007.VS2007Process()
+	vs2007p = vs2007.process.VS2007Process()
 #	vs2007p.process = 'hello process'
 #	pid = get_pid()
 #	patch_VS2007Process()
@@ -29,7 +29,7 @@ def setup():
 def teardown():
 #	stop_vs()
 	sys.argv = saved
-	vs2007.VS2007Process = original
+	vs2007.process.VS2007Process = original
 
 @with_setup(setup, teardown)
 def test_version():
@@ -46,13 +46,13 @@ def test_options():
 	assert_equals(args.subparser_name, 'start')
 
 def setup_mocks():
-	vs2007._VS2007Process = vs2007.VS2007Process
+	vs2007._VS2007Process = vs2007.process.VS2007Process
 	global mock_vs2007p
 	mock_vs2007p = MagicMock(return_value = None)
-	vs2007.VS2007Process = MagicMock(return_value = mock_vs2007p)
+	vs2007.process.VS2007Process = MagicMock(return_value = mock_vs2007p)
 
 def teardown_mocks():
-	vs2007.VS2007Process = vs2007._VS2007Process
+	vs2007.process.VS2007Process = vs2007._VS2007Process
 	delattr(vs2007, '_VS2007Process')
 
 def test_help():
@@ -62,28 +62,28 @@ def test_help():
 @with_setup(setup_mocks, teardown_mocks)
 def test_info():
 	sys.argv = ['vs', 'info']
-	vs2007.control._output = MagicMock(return_value = None)
+	vs2007.command_control._output = MagicMock(return_value = None)
 	mock_vs2007p._get_version = MagicMock(return_value = '1.120')
 	main()
-	vs2007.control._output.assert_called_once_with('vs %s with VisualStage 1.120' % vs2007._version.__version__)
+	vs2007.command_control._output.assert_called_once_with('vs %s with VisualStage 1.120' % vs2007._version.__version__)
 	#assert_raises(SystemExit, _parse_options)
 
 @with_setup(setup_mocks, teardown_mocks)
 def test_open_without_process():
 	path = 'C:\\VS2007data\\GrtCCG06'
 	sys.argv = ['vs2007', 'open', path]
-	vs2007.VS2007Process.is_running = MagicMock(return_value = False)
+	vs2007.process.VS2007Process.is_running = MagicMock(return_value = False)
 	main()
-	vs2007.VS2007Process.start.assert_called_once_with()
+	vs2007.process.VS2007Process.start.assert_called_once_with()
 	mock_vs2007p.file_open.assert_called_once_with(path)
 
 @with_setup(setup_mocks, teardown_mocks)
 def test_open_with_process():
 	path = 'C:\\VS2007data\\GrtCCG06'
 	sys.argv = ['vs2007', 'open', path]
-	vs2007.VS2007Process.is_running = MagicMock(return_value = True)
+	vs2007.process.VS2007Process.is_running = MagicMock(return_value = True)
 	main()
-	#vs2007.VS2007Process.start.assert_called_once_with()
+	#vs2007.process.VS2007Process.start.assert_called_once_with()
 	mock_vs2007p.file_open.assert_called_once_with(path)
 
 
@@ -91,31 +91,31 @@ def test_open_with_process():
 def test_stop():
 	sys.argv = ['vs2007', '--verbose', 'stop']
 	main()
-	vs2007.VS2007Process.stop.assert_called_once_with()
+	vs2007.process.VS2007Process.stop.assert_called_once_with()
 
 @with_setup(setup_mocks, teardown_mocks)
 def test_start():
 	sys.argv = ['vs2007', '--verbose', 'start']
 	main()
-	vs2007.VS2007Process.start.assert_called_once_with()
+	vs2007.process.VS2007Process.start.assert_called_once_with()
 
 @with_setup(setup_mocks, teardown_mocks)
 def test_status_with_pid():
 	sys.argv = ['vs2007', 'status']
-	vs2007.VS2007Process.get_pid = MagicMock(return_value = 160012)
-	vs2007.control._output = MagicMock(return_value = None)
+	vs2007.process.VS2007Process.get_pid = MagicMock(return_value = 160012)
+	vs2007.command_control._output = MagicMock(return_value = None)
 	main()
-	vs2007.VS2007Process.get_pid.assert_called_once_with()
-	vs2007.control._output.assert_called_once_with('RUNNING 160012')
+	vs2007.process.VS2007Process.get_pid.assert_called_once_with()
+	vs2007.command_control._output.assert_called_once_with('RUNNING 160012')
 
 @with_setup(setup_mocks, teardown_mocks)
 def test_status_without_pid():
 	sys.argv = ['vs2007', 'status']
-	vs2007.VS2007Process.get_pid = MagicMock(return_value = None)
-	vs2007.control._output = MagicMock(return_value = None)
+	vs2007.process.VS2007Process.get_pid = MagicMock(return_value = None)
+	vs2007.command_control._output = MagicMock(return_value = None)
 	main()
-	vs2007.VS2007Process.get_pid.assert_called_once_with()
-	vs2007.control._output.assert_called_once_with('STOPPED')
+	vs2007.process.VS2007Process.get_pid.assert_called_once_with()
+	vs2007.command_control._output.assert_called_once_with('STOPPED')
 
 @with_setup(setup_mocks, teardown_mocks)
 def test_pwd():
