@@ -6,7 +6,7 @@ from _version import __version__ as _version
 _progname = 'vs'
 
 def _process():
-	p = vs2007process.VS2007Process()
+	p = vs2007.process.VS2007Process()
 	return p
 
 def _start(args):
