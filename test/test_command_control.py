@@ -15,8 +15,8 @@ saved = None
 pid = None
 
 def setup():
-	global saved
-	saved = sys.argv
+ 	global saved
+ 	saved = sys.argv
 	global original
 	original = vs2007.process.VS2007Process
 	#win32api.OpenProcess = MagicMock(return_value='process')
@@ -27,8 +27,8 @@ def setup():
 #	patch_VS2007Process()
 
 def teardown():
-#	stop_vs()
-	sys.argv = saved
+# #	stop_vs()
+ 	sys.argv = saved
 	vs2007.process.VS2007Process = original
 
 @with_setup(setup, teardown)

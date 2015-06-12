@@ -1,11 +1,13 @@
 #!/usr/bin/env python
 import vs2007
+import vs2007.process as vs2007process
 import argparse
 from _version import __version__ as _version
 _progname = 'vs'
 
 def _process():
-	return vs2007.process.VS2007Process()
+	p = vs2007process.VS2007Process()
+	return p
 
 def _start(args):
 	vs2007.process.VS2007Process.start()
@@ -52,7 +54,7 @@ def _list(args):
 
 def _show_info(args):
 	info = '%s %s' % (_progname, _version)
-	if vs2007.process.VS2007Process.is_running():
+	if vs2007process.VS2007Process.is_running():
 		info += ' with VisualStage %s' % _process()._get_version()
 	_output(info)
 
