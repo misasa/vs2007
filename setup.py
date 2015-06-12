@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 import sys, os
-from vs2007 import __version__ as VERSION
+from vs2007._version import __version__ as VERSION
 
 #version = '0.1.1'
 

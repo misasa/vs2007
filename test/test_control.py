@@ -65,7 +65,7 @@ def test_info():
 	vs2007.control._output = MagicMock(return_value = None)
 	mock_vs2007p._get_version = MagicMock(return_value = '1.120')
 	main()
-	vs2007.control._output.assert_called_once_with('vs %s with VisualStage 1.120' % vs2007.__version__)
+	vs2007.control._output.assert_called_once_with('vs %s with VisualStage 1.120' % vs2007._version.__version__)
 	#assert_raises(SystemExit, _parse_options)
 
 @with_setup(setup_mocks, teardown_mocks)

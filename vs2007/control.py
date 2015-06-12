@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import vs2007
 import argparse
-from vs2007 import __version__ as _version
+from _version import __version__ as _version
 _progname = 'vs'
 
 def _process():
