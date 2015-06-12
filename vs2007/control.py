@@ -31,6 +31,13 @@ def _pwd(args):
 		pwd = vs2007p.pwd()
 		print pwd
 
+def _status(args):
+	pid = vs2007.VS2007Process.get_pid()
+	if pid:
+		_output('RUNNING %d' % pid)
+	else:
+		_output('STOPPED')
+
 def _list(args):
 	if vs2007.VS2007Process.is_running():
 		addrl = _process().get_address_list(args.index)
@@ -40,6 +47,9 @@ def _list(args):
 			elif args.address_or_attach == 'attach':
 				for attach in addr.get_attachlist():
 					print attach.to_s()
+
+def _output(text):
+	print text
 
 
 def _parse_options():
@@ -56,6 +66,9 @@ def _parse_options():
 	parser_open = subparsers.add_parser('open')
 	parser_open.add_argument('path')
 	parser_open.set_defaults(func=_open)
+
+	parser_status = subparsers.add_parser('status')
+	parser_status.set_defaults(func=_status)
 
 	parser_pwd = subparsers.add_parser('pwd')
 	parser_pwd.set_defaults(func=_pwd)

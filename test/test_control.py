@@ -7,7 +7,7 @@ from vs2007 import VS2007Process
 from mock import MagicMock
 import win32api
 
-from vs2007.control import _parse_options, _start, main
+from vs2007.control import _parse_options, _start, _output, main
 
 original_metod = None
 original = None
@@ -89,6 +89,24 @@ def test_start():
 	sys.argv = ['vs2007', '--verbose', 'start']
 	main()
 	vs2007.VS2007Process.start.assert_called_once_with()
+
+@with_setup(setup_mocks, teardown_mocks)
+def test_status_with_pid():
+	sys.argv = ['vs2007', 'status']
+	vs2007.VS2007Process.get_pid = MagicMock(return_value = 160012)
+	vs2007.control._output = MagicMock(return_value = None)
+	main()
+	vs2007.VS2007Process.get_pid.assert_called_once_with()
+	vs2007.control._output.assert_called_once_with('RUNNING 160012')
+
+@with_setup(setup_mocks, teardown_mocks)
+def test_status_without_pid():
+	sys.argv = ['vs2007', 'status']
+	vs2007.VS2007Process.get_pid = MagicMock(return_value = None)
+	vs2007.control._output = MagicMock(return_value = None)
+	main()
+	vs2007.VS2007Process.get_pid.assert_called_once_with()
+	vs2007.control._output.assert_called_once_with('STOPPED')
 
 @with_setup(setup_mocks, teardown_mocks)
 def test_pwd():
