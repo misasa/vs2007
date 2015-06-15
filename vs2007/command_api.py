@@ -2,6 +2,7 @@
 from optparse import OptionParser
 import sys
 import vs2007
+import vs2007.process
 
 prog = "vs-api"
 def _process():
