@@ -19,6 +19,7 @@ This is a command-line user interface for VisualStage2007.""",
       zip_safe=False,
       install_requires=[
             'pypiwin32',
+            'psutil',
           # -*- Extra requirements: -*-
       ],
       entry_points={

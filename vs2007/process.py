@@ -110,7 +110,7 @@ class VS2007Process(object):
 
 	@classmethod
 	def get_pid(cls):
-		for pid in psutil.get_pid_list():
+		for pid in psutil.pids():
 			p = psutil.Process(pid)
 			try:
 				if p.name() == cls.exe_name:
