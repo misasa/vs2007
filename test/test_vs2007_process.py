@@ -40,7 +40,7 @@ def teardown():
 	sys.argv = saved
 
 def start_vs():
-	VS2007Process.program_subdirname = 'VS2007-1.120'
+	#VS2007Process.program_subdirname = 'VS2007-1.120'
 	global vs2007p
 	VS2007Process.start()
 	vs2007p = VS2007Process()
