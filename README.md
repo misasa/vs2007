@@ -1,2 +1,37 @@
+# vs2007
 
-    pip install git+http://devel.misasa.okayama-u.ac.jp/gitlab/pythonpackage/vs2007.git
+Offer API to communicate with VisualStage 2007
+
+## Dependency
+
+None
+
+## Installation
+
+Install it as Administrator by yourself as:
+
+    DOS> pip install git+http://devel.misasa.okayama-u.ac.jp/gitlab/pythonpackage/vs2007.git
+
+Successful installation is confirmed by:
+
+    DOS> vs -h
+    DOS> vs start
+    DOS> vs-api -h
+    DOS> vs-api TEST_CMD
+
+## Commands
+
+Commands are summarized as:
+
+| command | description                       | note |
+| ------- | --------------------------------- | ---- |
+| vs      | Start and stop VisualStage 2007   |      |
+| vs-api  | Interactive with VisualStage 2007 |      |
+
+
+## Usage
+
+See online document:
+
+    DOS> vs --help
+    DOS> vs-api --help
