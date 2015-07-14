@@ -1,6 +1,7 @@
 # vs2007
 
 Offer API to communicate with VisualStage 2007.
+
 This is called by [gem/vstool](http://babel.misasa.okayama-u.ac.jp/gems/vstool/tree/master).
 
 # Dependency
