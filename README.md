@@ -4,7 +4,10 @@ Offer API to communicate with VisualStage 2007
 
 ## Dependency
 
-None
+### VisualStage 2007
+
+### [pip](https://pip.pypa.io/en/latest/installing.html "download and DOS> python get-pip.py")
+
 
 ## Installation
 
