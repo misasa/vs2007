@@ -2,14 +2,14 @@
 
 Offer API to communicate with VisualStage 2007
 
-## Dependency
+# Dependency
 
-### VisualStage 2007
+## VisualStage 2007
 
-### [pip](https://pip.pypa.io/en/latest/installing.html "download and DOS> python get-pip.py")
+## [pip](https://pip.pypa.io/en/latest/installing.html "download and DOS> python get-pip.py")
 
 
-## Installation
+# Installation
 
 Install it as Administrator by yourself as:
 
@@ -22,7 +22,7 @@ Successful installation is confirmed by:
     DOS> vs-api -h
     DOS> vs-api TEST_CMD
 
-## Commands
+# Commands
 
 Commands are summarized as:
 
@@ -32,7 +32,7 @@ Commands are summarized as:
 | vs-api  | Interactive with VisualStage 2007 |      |
 
 
-## Usage
+# Usage
 
 See online document:
 
