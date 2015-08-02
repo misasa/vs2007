@@ -19,9 +19,7 @@ Install it as Administrator by yourself as:
 
 Successful installation is confirmed by:
 
-    DOS> vs -h
-    DOS> vs start
-    DOS> vs-api -h
+    DOS> vs-api --help
     DOS> vs-api TEST_CMD
 
 # Commands
@@ -36,7 +34,4 @@ Commands are summarized as:
 
 # Usage
 
-See online document:
-
-    DOS> vs --help
-    DOS> vs-api --help
+See online document with option `--help`.
