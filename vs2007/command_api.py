@@ -9,7 +9,26 @@ def _process():
     return vs2007.process.VS2007Process()
 
 def _parser():
-    parser = OptionParser("usage: %prog [options] COMMAND")
+    parser = OptionParser("""usage: %prog [options] COMMAND
+
+SYNOPSIS AND USAGE
+  %prog [options] COMMAND
+
+DESCRIPTION
+
+EXAMPLE
+
+SEE ALSO
+  http://dream.misasa.okayama-u.ac.jp
+
+IMPLEMENTATION
+  Orochi, version 9
+  Copyright (C) 2014 Okayama University
+  License GPLv3+: GNU GPL version 3 or later
+
+HISTORY
+  August 11, 2015: Add documentation
+""")
     parser.add_option("-v","--verbose",action="store_true",dest="verbose",default=False,help="make lots of noise")
     parser.add_option("-i","--interactive",action="store_true",dest="interactive",default=True,help="interactive mode")
     parser.add_option("-d","--set_handle",action="store",type="int",dest="handle",default=0,help="specify window handle of VisualStage")
