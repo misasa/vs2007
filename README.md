@@ -1,12 +1,12 @@
 # vs2007
 
-Offer API to communicate with VisualStage 2007.
+Offer API to communicate with application program for MS-Windows `VisualStage 2007`.
 
 This is called by [gem/vstool](http://babel.misasa.okayama-u.ac.jp/gems/vstool/tree/master).
 
 # Dependency
 
-## VisualStage 2007
+## Program for MS-Windows, VisualStage 2007
 
 ## [pip](https://pip.pypa.io/en/latest/installing.html "download and DOS> python get-pip.py")
 
