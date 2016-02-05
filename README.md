@@ -4,6 +4,7 @@ Offer API to communicate with application program for MS-Windows `VisualStage 20
 
 This is called by [gem/vstool](http://babel.misasa.okayama-u.ac.jp/gems/vstool/tree/master).
 
+
 # Dependency
 
 ## Program for MS-Windows, VisualStage 2007
@@ -21,6 +22,7 @@ Successful installation is confirmed by:
 
     DOS> vs-api --help
     DOS> vs-api TEST_CMD
+
 
 # Commands
 
