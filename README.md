@@ -2,7 +2,7 @@
 
 Offer API to communicate with application program for MS-Windows `VisualStage 2007`.
 
-This is called by [gem/vstool](http://devel.misasa.okayama-u.ac.jp/gitlab/gems/vstool/tree/master).
+This is called by [gems/vstool](http://devel.misasa.okayama-u.ac.jp/gitlab/gems/vstool/tree/master).
 
 
 # Dependency
