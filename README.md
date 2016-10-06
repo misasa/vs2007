@@ -11,12 +11,16 @@ This is called by [gems/vstool](http://devel.misasa.okayama-u.ac.jp/gitlab/gems/
 
 ## [pip](https://pip.pypa.io/en/latest/installing.html "download and DOS> python get-pip.py")
 
+## [pywin32] (http://sourceforge.net/projects/pywin32/)
+
+## Git
+
 
 # Installation
 
 Install it as Administrator by yourself as:
 
-    DOS> pip install git+http://devel.misasa.okayama-u.ac.jp/gitlab/pythonpackage/vs2007.git
+    ADMIN.DOS> pip install git+http://devel.misasa.okayama-u.ac.jp/gitlab/pythonpackage/vs2007.git
 
 Successful installation is confirmed by:
 
