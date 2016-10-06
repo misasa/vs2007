@@ -11,18 +11,20 @@ This is called by [gems/vstool](http://devel.misasa.okayama-u.ac.jp/gitlab/gems/
 
 ##  [Python for Windows] (https://www.python.org/downloads/windows/)
 
-TK confirmed 32-bit Python 2.7.12 for Windows works (October 6, 2016).
-Include "C:\Python27\;C:\Python27\Scripts\" to %PATH%.
+Include "C:\Python27\;C:\Python27\Scripts\" to %PATH%.  TK confirmed
+`python-2.7.12.msi' and `python-2.7.12.amd64.msi' work for 32-bit and
+64-bit Windows (October 6, 2016).
 
 ## [pip](https://pip.pypa.io/en/latest/installing.html "download and DOS> python get-pip.py")
 
-TK confirmed 32-bit Python 2.7.12 for Windows includes `pip' (October 6, 2016).
+TK confirmed Python for Windows includes `pip' 8.1.1.  (October 6,
+2016).
 
 ## [pywin32] (http://sourceforge.net/projects/pywin32/)
 
 Download and launch installer.  TK downloaded
-`pywin32-220.win32-py2.7.exe' and confirmed to work (October 6, 2016).
-
+`pywin32-220.win32-py2.7.exe' and `pywin32-220.win-amd64-py2.7.exe'
+and confirmed to work (October 6, 2016).
 
 ## Git
 
