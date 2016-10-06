@@ -7,7 +7,7 @@ This is called by [gems/vstool](http://devel.misasa.okayama-u.ac.jp/gitlab/gems/
 
 # Dependency
 
-## Program for Windows, VisualStage 2007
+## Program for Windows, VisualStage 2007 (version 1.1)
 
 ##  [Python for Windows] (https://www.python.org/downloads/windows/)
 
