@@ -2,10 +2,7 @@
 
 Offer API to communicate with application program for MS-Windows `VisualStage 2007`.
 
-This is called
-by
-[gems/vstool](http://devel.misasa.okayama-u.ac.jp/gitlab/gems/vstool/tree/master) and
-`vs_attach-image.m'.
+This is called by [gems/vstool](http://devel.misasa.okayama-u.ac.jp/gitlab/gems/vstool/tree/master) and `vs_attach-image.m'.
 
 
 # Dependency
