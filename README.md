@@ -7,7 +7,10 @@ This is called by [gems/vstool](http://devel.misasa.okayama-u.ac.jp/gitlab/gems/
 
 # Dependency
 
-## Program for Windows, VisualStage 2007 (version 1.1)
+## VisualStage 2007 for Windows
+
+TK confirmed this work with VisualStage 2007 (version 1.1).  Very likely
+this also works with VisualStage 2007 (version 1.2).
 
 ##  [Python for Windows] (https://www.python.org/downloads/windows/)
 
