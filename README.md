@@ -37,9 +37,13 @@ You have to cofigure git environment to talk to
 
 # Installation
 
-Install it as Administrator by yourself as:
+Install it as Administrator as:
 
     ADMIN.DOS> pip install git+http://devel.misasa.okayama-u.ac.jp/gitlab/pythonpackage/vs2007.git
+
+Or download [vs2007-xxxyyyzzz.zip](http://devel.misasa.okayama-u.ac.jp/gitlab/pythonpackage/vs2007/repository/archive.zip) to local directory and install it as Administrator as:
+
+    ADMIN.CMD> pip install vs2007-c18fb69e5c558269b4c0285d77b9b12708f37424
 
 Successful installation is confirmed by:
 
