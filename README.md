@@ -25,9 +25,7 @@ TK confirmed Python for Windows includes `pip' 8.1.1.  (October 6,
 
 ## [pywin32] (http://sourceforge.net/projects/pywin32/)
 
-Download and launch installer.  TK downloaded
-`pywin32-220.win32-py2.7.exe' and `pywin32-220.win-amd64-py2.7.exe'
-and confirmed to work (October 6, 2016).
+Download and launch installer.  TK downloaded `pywin32-220.win32-py2.7.exe' and `pywin32-220.win-amd64-py2.7.exe' and confirmed to work (October 6, 2016).
 
 ## Git
 
@@ -39,7 +37,7 @@ You have to cofigure git environment to talk to
 
 Install it as Administrator as:
 
-    ADMIN.DOS> pip install git+http://devel.misasa.okayama-u.ac.jp/gitlab/pythonpackage/vs2007.git
+    ADMIN.CMD> pip install git+http://devel.misasa.okayama-u.ac.jp/gitlab/pythonpackage/vs2007.git
 
 Or download [vs2007-xxxyyyzzz.zip](http://devel.misasa.okayama-u.ac.jp/gitlab/pythonpackage/vs2007/repository/archive.zip) to local directory and install it as Administrator as:
 
@@ -47,8 +45,8 @@ Or download [vs2007-xxxyyyzzz.zip](http://devel.misasa.okayama-u.ac.jp/gitlab/py
 
 Successful installation is confirmed by:
 
-    DOS> vs-api --help
-    DOS> vs-api TEST_CMD
+    CMD> vs-api --help
+    CMD> vs-api TEST_CMD
 
 
 # Commands
