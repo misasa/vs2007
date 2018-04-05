@@ -1,6 +1,6 @@
-# vs2007
+# python package -- vs2007
 
-Offer API to communicate with application program for MS-Windows `VisualStage 2007`.
+Offer API to communicate with application program `VisualStage 2007`.
 
 This is called by [gem package -- vstool](http://devel.misasa.okayama-u.ac.jp/gitlab/gems/vstool/tree/master) and `Mablab script -- vs_attach_image.m`.
 
