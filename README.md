@@ -2,7 +2,7 @@
 
 Offer API to communicate with application program for MS-Windows `VisualStage 2007`.
 
-This is called by [gem package -- vstool](http://devel.misasa.okayama-u.ac.jp/gitlab/gems/vstool/tree/master) and `vs_attach_image.m'.
+This is called by [gem package -- vstool](http://devel.misasa.okayama-u.ac.jp/gitlab/gems/vstool/tree/master) and `Mablab script -- vs_attach_image.m`.
 
 
 # Dependency
@@ -13,9 +13,7 @@ TK confirmed this work with VisualStage 2007 (version 1.1).  Very likely this al
 
 ##  [Python for Windows] (https://www.python.org/downloads/windows/)
 
-Include "C:\Python27\;C:\Python27\Scripts\" to %PATH%.  TK confirmed
-`python-2.7.12.msi' and `python-2.7.12.amd64.msi' work for 32-bit and
-64-bit Windows (October 6, 2016).
+Include "C:\Python27\;C:\Python27\Scripts\" to %PATH%.  TK confirmed `python-2.7.12.msi' and `python-2.7.12.amd64.msi' work for 32-bit and 64-bit Windows (October 6, 2016).
 
 ## [pip](https://pip.pypa.io/en/latest/installing.html "download and DOS> python get-pip.py")
 
