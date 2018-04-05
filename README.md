@@ -2,15 +2,14 @@
 
 Offer API to communicate with application program for MS-Windows `VisualStage 2007`.
 
-This is called by [gems/vstool](http://devel.misasa.okayama-u.ac.jp/gitlab/gems/vstool/tree/master) and `vs_attach_image.m'.
+This is called by [gem package -- vstool](http://devel.misasa.okayama-u.ac.jp/gitlab/gems/vstool/tree/master) and `vs_attach_image.m'.
 
 
 # Dependency
 
 ## VisualStage 2007 for Windows
 
-TK confirmed this work with VisualStage 2007 (version 1.1).  Very likely
-this also works with VisualStage 2007 (version 1.2).
+TK confirmed this work with VisualStage 2007 (version 1.1).  Very likely this also works with VisualStage 2007 (version 1.2).
 
 ##  [Python for Windows] (https://www.python.org/downloads/windows/)
 
@@ -20,8 +19,7 @@ Include "C:\Python27\;C:\Python27\Scripts\" to %PATH%.  TK confirmed
 
 ## [pip](https://pip.pypa.io/en/latest/installing.html "download and DOS> python get-pip.py")
 
-TK confirmed Python for Windows includes `pip' 8.1.1.  (October 6,
-2016).
+TK confirmed Python for Windows includes `pip' 8.1.1.  (October 6, 2016).
 
 ## [pywin32] (http://sourceforge.net/projects/pywin32/)
 
