@@ -2,7 +2,9 @@
 
 Offer API to communicate with application program `VisualStage 2007`.
 
-This is called by [gem package -- vstool](http://devel.misasa.okayama-u.ac.jp/gitlab/gems/vstool/tree/master) and `Mablab script -- vs_attach_image.m`.
+This is called by [gem package --
+vstool](http://devel.misasa.okayama-u.ac.jp/gitlab/gems/vstool/tree/master)
+and `Matlab script -- vs_attach_image.m`.
 
 
 # Dependency
@@ -25,7 +27,7 @@ Download and launch installer.  TK downloaded `pywin32-220.win32-py2.7.exe` and 
 
 ## Git
 
-You have to cofigure git environment to talk to
+You have to configure git environment to talk to
 "http://devel.misasa.okayama-u.ac.jp/gitlab/".
 
 
