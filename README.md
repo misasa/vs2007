@@ -3,9 +3,10 @@
 Two commands that interact with application program `VisualStage 2007`
 via Windows API.
 
-This is called by [gem package --
-vstool](http://babel.misasa.okayama-u.ac.jp/gems/vstool/tree/master)
-and `Matlab script -- vs_attach_image.m`.
+See
+[gem package -- vstool](http://babel.misasa.okayama-u.ac.jp/gems/vstool/tree/master)
+`Matlab script -- vs_attach_image.m`
+that refer to this package.
 
 # Dependency
 
