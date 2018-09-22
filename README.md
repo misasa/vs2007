@@ -4,7 +4,7 @@ Two commands that interact with application program `VisualStage 2007`
 via Windows API.
 
 This is called by [gem package --
-vstool](http://devel.misasa.okayama-u.ac.jp/gitlab/gems/vstool/tree/master)
+vstool](http://babel.misasa.okayama-u.ac.jp/gems/vstool/tree/master)
 and `Matlab script -- vs_attach_image.m`.
 
 # Dependency
@@ -23,7 +23,7 @@ Include "C:\Python27\;C:\Python27\Scripts\" to %PATH%.  TK confirmed
 ## Git
 
 You have to configure git environment to talk to
-"http://devel.misasa.okayama-u.ac.jp/gitlab/".
+"http://babel.misasa.okayama-u.ac.jp/".
 
 # Installation
 
