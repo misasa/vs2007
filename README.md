@@ -24,18 +24,18 @@ Include "C:\Python27\;C:\Python27\Scripts\" to %PATH%.  TK confirmed
 ## Git
 
 You have to configure git environment to talk to
-"http://babel.misasa.okayama-u.ac.jp/".
+"http://gitlab.misasa.okayama-u.ac.jp/".
 
 # Installation
 
 Install it as Administrator as:
 
-    ADMIN.CMD> pip install git+http://devel.misasa.okayama-u.ac.jp/gitlab/pythonpackage/vs2007.git
+    ADMIN.CMD> pip install git+http://gitlab.misasa.okayama-u.ac.jp/pythonpackage/vs2007.git
 
 Or download [vs2007-xxxyyyzzz.zip](http://devel.misasa.okayama-u.ac.jp/gitlab/pythonpackage/vs2007/repository/archive.zip) to a local directory and install it as Administrator as:
 
     $ cd ~/Downloads
-    $ wget http://devel.misasa.okayama-u.ac.jp/gitlab/pythonpackage/vs2007/repository/archive.zip
+    $ wget http://gitlab.misasa.okayama-u.ac.jp/pythonpackage/vs2007/repository/archive.zip
     $ ls | grep zip
     vs2007-37fd5efca85718a41c6370689886d565ceaf44c6.zip
     ADMIN.CMD> pip install vs2007-37fd5efca85718a41c6370689886d565ceaf44c6.zip
