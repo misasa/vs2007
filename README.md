@@ -4,7 +4,7 @@ Two commands that interact with application program `VisualStage 2007`
 via Windows API.
 
 See
-[gem package -- vstool](http://babel.misasa.okayama-u.ac.jp/gems/vstool/tree/master)
+[gem package -- vstool](https://gitlab.misasa.okayama-u.ac.jp/gems/vstool/tree/master)
 `Matlab script -- vs_attach_image.m`
 that refer to this package.
 
@@ -32,7 +32,7 @@ Install it as Administrator as:
 
     ADMIN.CMD> pip install git+http://gitlab.misasa.okayama-u.ac.jp/pythonpackage/vs2007.git
 
-Or download [vs2007-xxxyyyzzz.zip](http://devel.misasa.okayama-u.ac.jp/gitlab/pythonpackage/vs2007/repository/archive.zip) to a local directory and install it as Administrator as:
+Or download [vs2007-xxxyyyzzz.zip](http://gitlab.misasa.okayama-u.ac.jp/pythonpackage/vs2007/repository/archive.zip) to a local directory and install it as Administrator as:
 
     $ cd ~/Downloads
     $ wget http://gitlab.misasa.okayama-u.ac.jp/pythonpackage/vs2007/repository/archive.zip
