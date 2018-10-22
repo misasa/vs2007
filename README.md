@@ -24,7 +24,7 @@ Include "C:\Python27\;C:\Python27\Scripts\" to %PATH%.  TK confirmed
 ## Git
 
 You have to configure git environment to talk to
-"http://gitlab.misasa.okayama-u.ac.jp/".
+"https://gitlab.misasa.okayama-u.ac.jp/".
 
 # Installation
 
