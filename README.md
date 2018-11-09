@@ -36,8 +36,9 @@ Install it as Administrator as:
 
 Or download [vs2007-xxxyyyzzz.zip](http://gitlab.misasa.okayama-u.ac.jp/pythonpackage/vs2007/repository/archive.zip) to a local directory and install it as Administrator as:
 
-    $ cd ~/Downloads
-    $ wget http://gitlab.misasa.okayama-u.ac.jp/pythonpackage/vs2007/repository/archive.zip
+    ADMIN.CMD> pip list
+    ADMIN.CMD> pip uninstall vs2007
+    $ wget https://gitlab.misasa.okayama-u.ac.jp/pythonpackage/vs2007/repository/archive.zip
     $ ls | grep zip
     vs2007-37fd5efca85718a41c6370689886d565ceaf44c6.zip
     ADMIN.CMD> pip install vs2007-37fd5efca85718a41c6370689886d565ceaf44c6.zip
