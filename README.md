@@ -8,8 +8,8 @@ The `vs-api` is a command to execute VisualStageAPI command specified as an argu
 
 See
 [gem package -- vstool](https://gitlab.misasa.okayama-u.ac.jp/gems/vstool/tree/master)
-and
-[Matlab script -- vs_attach_image.m](http://multimed.misasa.okayama-u.ac.jp/repository/matlab/)
+and `vs_attach_image.m` in 
+[Matlab script -- VisualSpots](http://multimed.misasa.okayama-u.ac.jp/repository/matlab/)
 that refer to this package.
 
 # Dependency
