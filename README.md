@@ -25,14 +25,9 @@ Include "C:\Python27\;C:\Python27\Scripts\" to %PATH%.  TK confirmed
 `python-2.7.15.msi` and `python-2.7.15.amd64.msi` work for 32-bit and
 64-bit Windows (August 29, 2018).
 
-## Git
-
-You have to configure git environment to talk to
-"https://gitlab.misasa.okayama-u.ac.jp/".
-
 # Installation
 
-Install it as Administrator as:
+Configure git environment to talk to https://gitlab.misasa.okayama-u.ac.jp/ and install this package as Administrator as:
 
     ADMIN.CMD> pip install git+http://gitlab.misasa.okayama-u.ac.jp/pythonpackage/vs2007.git
 
