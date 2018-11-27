@@ -41,9 +41,7 @@ Or download [vs2007-xxxyyyzzz.zip](http://gitlab.misasa.okayama-u.ac.jp/pythonpa
     ADMIN.CMD> pip list
     ADMIN.CMD> pip uninstall vs2007
     $ wget https://gitlab.misasa.okayama-u.ac.jp/pythonpackage/vs2007/repository/archive.zip
-    $ ls | grep zip
-    vs2007-37fd5efca85718a41c6370689886d565ceaf44c6.zip
-    ADMIN.CMD> pip install vs2007-37fd5efca85718a41c6370689886d565ceaf44c6.zip
+    ADMIN.CMD> pip install archive.zip
 
 Successful installation is confirmed by:
 
