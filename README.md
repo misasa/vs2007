@@ -31,7 +31,7 @@ Configure git environment to talk to https://gitlab.misasa.okayama-u.ac.jp/ and 
 
     ADMIN.CMD> pip install git+http://gitlab.misasa.okayama-u.ac.jp/pythonpackage/vs2007.git
 
-Or download [vs2007-xxxyyyzzz.zip](http://gitlab.misasa.okayama-u.ac.jp/pythonpackage/vs2007/repository/archive.zip) to a local directory and install it as Administrator as:
+Or download [archive.zip](http://gitlab.misasa.okayama-u.ac.jp/pythonpackage/vs2007/repository/archive.zip) to a local directory and install it as Administrator as:
 
     ADMIN.CMD> pip list
     ADMIN.CMD> pip uninstall vs2007
