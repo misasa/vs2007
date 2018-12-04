@@ -3,7 +3,7 @@
 Provide two commands (`vs` and `vs-api`) that control the application program `VisualStage 2007`.
 The two commands enable users to develop a program by talking to `VisualStage 2007`. 
 
-The command `vs` is for starting/stopping a program Visual Stage, opening/closing its data file, and outputting its adress and attachement
+The command `vs` is for starting/stopping a program Visual Stage, opening/closing its data file, and outputting its adress and attachement. 
 The command `vs-api` is for executing VisualStageAPI as an argument. 
 
 See
