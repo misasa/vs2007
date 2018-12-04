@@ -1,10 +1,10 @@
 # python package -- vs2007
 
 Provide two commands (`vs` and `vs-api`) that control the application program `VisualStage 2007`.
-User can develop his own program that talks to `VisualStage 2007` using the two commands.
+The two commands enable users to develop a program by talking to `VisualStage 2007`. 
 
-The `vs` is a command to start/stop Visual Stage and open/close its data file as well as to output the adress and the attachement.
-The `vs-api` is a command to execute VisualStageAPI command specified as an argument.  
+The command `vs` is for starting/stopping a program Visual Stage, opening/closing its data file, and outputting its adress and attachement
+The command `vs-api` is for executing VisualStageAPI as an argument. 
 
 See
 [gem package -- vstool](https://gitlab.misasa.okayama-u.ac.jp/gems/vstool/tree/master)
