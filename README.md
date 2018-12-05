@@ -7,7 +7,7 @@ The command `vs` is for starting/stopping the application program `VisualStage 2
 The command `vs-api` is for executing VisualStageAPI as an argument. 
 
 See
-[gem package -- vstool](https://gitlab.misasa.okayama-u.ac.jp/gems/vstool/tree/master)
+[gem package -- visual_stage](https://gitlab.misasa.okayama-u.ac.jp/gems/visual_stage)
 and `vs_attach_image.m` in 
 [Matlab script -- VisualSpots](http://multimed.misasa.okayama-u.ac.jp/repository/matlab/)
 that refer to this package.
