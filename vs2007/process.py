@@ -284,10 +284,10 @@ class VS2007Process(object):
 		class_id = self.get_value(base_adr + 0x40, ctypes.c_ulong())
 		address_id = self.get_value(base_adr + 0x3C, ctypes.c_ulong())
 		dic = {'address_id':int(address_id), 'class_id':int(class_id)}
-		dic['name'] = name
+		dic['name'] = '"' + name + '"'
 		dic['locate_x'] = x
 		dic['locate_y'] = y
-		dic['data'] = data
+		dic['data'] = '"' + data + '"'
 		return dic
 
 	def get_attach_data(self, base_adr):
