@@ -46,7 +46,7 @@ class VS2007Process(object):
 	def start(cls):
 		pid = cls.get_pid()
 		if not pid == None:
-			print "%s is already running (PID: %d)" % (cls.exe_name, pid)
+			print("%s is already running (PID: %d)" % (cls.exe_name, pid))
 			return
 
 		exe_path = cls.get_exe_path()
@@ -64,10 +64,10 @@ class VS2007Process(object):
 				break
 			time.sleep(0.5)
 			if not pid == None:
-				print "SUCCESS %d" % pid
+				print("SUCCESS %d" % pid)
 				return
 			else:
-				print "FAILED"
+				print("FAILED")
 				return
 
 	@classmethod
@@ -160,7 +160,7 @@ class VS2007Process(object):
 				version = self.read_string_from_process_memory(0x00478AF8)
 			self._version = version
 
-		return self._version
+		return self._version.decode()
 
 	def _set_version(self, value):
 		self._version = value
@@ -273,7 +273,7 @@ class VS2007Process(object):
 	#PROCESS_ALL_ACCESS = 0x1F0FFF
 
 		self.rPM(self.process.handle, ADDRESS, ADDRESS2,SIZE,ctypes.byref(bytes_read))
-		return ADDRESS2.value
+		return ADDRESS2.value.decode()
 
 
 	def get_address_data(self, base_adr):
@@ -314,7 +314,7 @@ class VS2007Process(object):
 		#See 0x00417439
 		pid = self.pid
 		if pid == None:
-			print "STOPPED"
+			print("STOPPED")
 		else:
 			#start_address = self.get_address(0x00477060)
 			start_address = self.get_address(self.address_for('addresslist'))					

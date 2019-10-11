@@ -127,10 +127,10 @@ def test_get_addresslist_with_open():
 	assert len(addrl) > 0
 	assert len(addrl[0].get_attachlist()) > 0
 	for addr in addrl:
-		print addr.to_s()
+		print(addr.to_s())
 	for addr in addrl:
 		for attach in addr.get_attachlist():
-			print attach.to_s()
+			print(attach.to_s())
 
 
 def test_get_handle():

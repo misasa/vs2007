@@ -2,7 +2,7 @@
 import vs2007
 import vs2007.process
 import argparse
-from _version import __version__ as _version
+from vs2007._version import __version__ as _version
 _progname = 'vs'
 
 def _process():
@@ -33,7 +33,7 @@ def _pwd(args):
 	if vs2007.process.VS2007Process.is_running():
 		vs2007p = _process()
 		pwd = vs2007p.pwd()
-		print pwd
+		print(pwd)
 
 def _status(args):
 	pid = vs2007.process.VS2007Process.get_pid()
@@ -47,10 +47,10 @@ def _list(args):
 		addrl = _process().get_address_list(args.index)
 		for addr in addrl:		
 			if args.address_or_attach == 'address':
-				print addr.to_s()
+				print(addr.to_s())
 			elif args.address_or_attach == 'attach':
 				for attach in addr.get_attachlist():
-					print attach.to_s()
+					print(attach.to_s())
 
 def _show_info(args):
 	info = '%s %s' % (_progname, _version)
@@ -59,7 +59,7 @@ def _show_info(args):
 	_output(info)
 
 def _output(text):
-	print text
+	print(text)
 
 
 def _parse_options():

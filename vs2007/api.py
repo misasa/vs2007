@@ -76,8 +76,8 @@ class VS2007API(object):
 		wndClassAtom = None
 		try:
 			wndClassAtom = win32gui.RegisterClass(wndClass)
-		except Exception, e:
-			print e
+		except Exception as e:
+			print(e)
 			raise e
 
 		hWindow = win32gui.CreateWindow(
@@ -92,7 +92,7 @@ class VS2007API(object):
 		if hWindow:
 			cls.g_myhWnd = hWindow
 		else:
-			print 'Initialize Error!'
+			print('Initialize Error!')
 			sys.exit(1)
 
 
@@ -117,11 +117,11 @@ class VS2007API(object):
 				return self.g_r_message
 			else:
 				return "FAILURE"
-		except pywintypes.error,e:
+		except pywintypes.error as e:
 			error_code = e[0]
 			error_in = e[1]
 			error_msg = e[2]
-			print "ERROR(%d) in %s: %s" % (e[0], e[1], e[2])
+			print("ERROR(%d) in %s: %s" % (e[0], e[1], e[2]))
 
 	def SendCommand(self, command, timeout):
 		CDS = COPYDATASTRUCT()

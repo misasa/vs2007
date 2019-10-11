@@ -66,15 +66,15 @@ def main():
     if options.get_handle:
         handle = _get_handle()
         if handle and handle != 0:
-            print "SUCCESS %d" % handle
+            print("SUCCESS %d" % handle)
             sys.exit()
         else:
-            print "FAILURE"
+            print("FAILURE")
             sys.exit(1)
 
     if len(args) > 0:
         for command in args:
-            print _send_command(command)
+            print(_send_command(command))
 
 if __name__ == '__main__':
     main()
