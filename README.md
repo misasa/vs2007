@@ -19,11 +19,9 @@ that refer to this package.
 TK confirmed this work with VisualStage 2007 (version 1.1).  Very
 likely this also works with VisualStage 2007 (version 1.2).
 
-## [Python 2.7 for Windows](https://www.python.org/downloads/windows/)
+## [Python 3.7 for Windows](https://www.python.org/downloads/windows/)
 
-Include "C:\Python27\;C:\Python27\Scripts\" to %PATH%.  TK confirmed
-`python-2.7.16.msi` and `python-2.7.16.amd64.msi` work for 32-bit and
-64-bit Windows (August 22, 2019).
+Include "C:\Python37\;C:\Python37\Scripts\" to %PATH%.
 
 # Installation
 
