@@ -3,6 +3,8 @@ import os
 import unittest
 from nose.tools import *
 from mock import MagicMock
+from testfixtures import LogCapture
+import logging
 import vs2007
 from vs2007.process import VS2007Process
 from vs2007.api import VS2007API
@@ -12,13 +14,15 @@ saved = None
 pid = None
 vs2007p = None
 
-def setup():
+def _setup():
+	print("setup...")
 	global saved
 	saved = sys.argv
 	start_vs()
 	global pid
 
-def setup_112():
+def _setup_112():
+	print("setup_112...")
 	global saved
 	saved = sys.argv
 	start_vs_112()
@@ -26,36 +30,32 @@ def setup_112():
 	pid = get_pid()
 
 def setup_mock_api():
+	print("setup_mock_api...")
 	global original_api
 	original_api = vs2007p.api.send_command_and_receive_message
 	vs2007p.api.send_command_and_receive_message = MagicMock(return_value = 'SUCCESS' )	
 
 
 def teardown_mock_api():
+	print("teardown_mock_api...")
 	vs2007p.api.send_command_and_receive_message = original_api
 
 
-def teardown():
+def _teardown():
+	print("teardown...")
 	stop_vs()
 	sys.argv = saved
 
 def start_vs():
+	print("start_vs...")
 	#VS2007Process.program_subdirname = 'VS2007-1.120'
 	global vs2007p
 	VS2007Process.start()
 	vs2007p = VS2007Process()
 
 def stop_vs():
+	print("stop_vs...")
 	VS2007Process.stop()
-
-def test_api():
-	command = 'TEST_CMD'
-	message = vs2007p.api.send_command_and_receive_message(command, 0)
-	assert_equal(message, 'SUCCESS')
-	message = vs2007p.send_command(command)
-	assert_equal(message, 'SUCCESS')
-
-
 
 def test_is_running():
 	assert_equal(VS2007Process.is_running(), True)
@@ -122,15 +122,6 @@ def test_get_path_and_dataname():
 	assert_equal(vs2007p.pwd(), path + '\\' + dataname)
 
 #@with_setup(None, teardown)
-def test_get_addresslist_with_open():
-	addrl = vs2007p.get_address_list()
-	assert len(addrl) > 0
-	assert len(addrl[0].get_attachlist()) > 0
-	for addr in addrl:
-		print(addr.to_s())
-	for addr in addrl:
-		for attach in addr.get_attachlist():
-			print(attach.to_s())
 
 
 def test_get_handle():
@@ -138,10 +129,49 @@ def test_get_handle():
 #	vs2007p._set_api(None)
 	vs2007.process.VS2007Process.set_handle(1111)
 	handle = VS2007Process.get_handle()
+	assert_equal(handle, 1112)
 
-@with_setup(None, teardown)
+#@with_setup(None, teardown)
 def test_stop():
 	pass
 
-def test_is_running():
-	assert_equal(VS2007Process.is_running(), False)
+class ProcessWithVSTestCase:
+	def setup(self):
+		start_vs()
+
+	def test_is_running(self):
+		assert_equal(VS2007Process.is_running(), True)
+
+	def test_get_handle(self):
+		logging.basicConfig(level='INFO', format='%(asctime)s %(levelname)s:%(message)s')
+		logger = logging.getLogger('')
+		with LogCapture() as logs:
+			handle = VS2007Process.get_handle()
+			assert_true(isinstance(handle, int))
+			assert 'get_handle...' in str(logs)
+
+	def test_api(self):
+		logging.basicConfig(level='INFO', format='%(asctime)s %(levelname)s:%(message)s')
+		logger = logging.getLogger('')
+		with LogCapture() as logs:
+			assert_equal(VS2007Process().api.send_command_and_receive_message('TEST_CMD', 0), 'SUCCESS')
+			assert_equal(VS2007Process().api.send_command_and_receive_message('FILE_OPEN C:\\VS2007data,image2vs,YES', 0), 'SUCCESS')
+			assert_equal(VS2007Process().api.send_command_and_receive_message('FILE_CLOSE YES', 0), 'SUCCESS')
+			print(str(logs))
+
+	def test_get_addresslist_with_open(self):
+		addrl = vs2007p.get_address_list()
+		assert len(addrl) > 0
+		assert len(addrl[0].get_attachlist()) > 0
+		for addr in addrl:
+			print(addr.to_s())
+		for addr in addrl:
+			for attach in addr.get_attachlist():
+				print(attach.to_s())
+
+	def teardown(self):
+		stop_vs()
+
+class ProcessWithoutVSTestCase:
+  def test_stop(self):
+	  assert_equal(VS2007Process.is_running(), False)

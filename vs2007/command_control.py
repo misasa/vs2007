@@ -2,6 +2,7 @@
 import vs2007
 import vs2007.process
 import argparse
+import logging
 from vs2007._version import __version__ as _version
 _progname = 'vs'
 
@@ -10,7 +11,11 @@ def _process():
 	return p
 
 def _start(args):
-	vs2007.process.VS2007Process.start()
+	pid = vs2007.process.VS2007Process.start()
+	if pid:
+		_output('SUCCESS %d' % pid)
+	else:
+		_output('FAILED')
 
 def _stop(args):
 	vs2007.process.VS2007Process.stop()
@@ -30,6 +35,7 @@ def _save(args):
 		_process().file_save()
 
 def _pwd(args):
+	logging.info('_pwd...')
 	if vs2007.process.VS2007Process.is_running():
 		vs2007p = _process()
 		pwd = vs2007p.pwd()
@@ -65,6 +71,9 @@ def _output(text):
 def _parse_options():
 	parser = argparse.ArgumentParser(prog='vs')
 	parser.add_argument('--verbose', action='store_true', help='Run verbosely')
+	parser.add_argument("-l","--log_level",dest="log_level",default="WARNING",help="set log level")    
+	#parser.add_argument("--log-file",dest="log_level",default="WARNING",help="set log level")    
+
 	subparsers = parser.add_subparsers(dest='subparser_name')
 
 	parser_info = subparsers.add_parser('info')
@@ -102,6 +111,7 @@ def _parse_options():
 
 def main():
 	args = _parse_options()
+	logging.basicConfig(level=args.log_level.upper(), format='%(asctime)s %(levelname)s:%(message)s')
 	args.func(args)
 
 if __name__ == '__main__':

@@ -7,6 +7,7 @@ import psutil
 import ctypes
 import win32api
 import ntpath
+import logging
 from ctypes import wintypes
 from vs2007.api import VS2007API
 from vs2007 import Address
@@ -16,6 +17,7 @@ class VS2007Process(object):
 	exe_name = 'VS2007.exe'
 	program_dirs = ['C:\\Program Files (x86)', 'C:\\Program Files']
 	program_subdirname = 'VS2007'
+	pid = None
 
 	dic_address_for = {
 		'open_flag': {'1.100': 0x476C78, '1.120': 0x00479D28},
@@ -39,15 +41,24 @@ class VS2007Process(object):
 
 	@classmethod
 	def is_running(cls):
-		pid = cls.get_pid()
-		return not pid == None
+		logging.info('VS2007Process.is_running')
+		if cls.pid == None:
+			logging.info('VS2007Process.pid is None')
+			pid = cls.get_pid()
+			return not pid == None
+		else:
+			logging.info('VS2007Process.pid is %d' % cls.pid)
+			return cls.check_pid(cls.pid)
+		#pid = cls.get_pid()
+		#return not pid == None
 
 	@classmethod
-	def start(cls):
+	def start(cls, timeout = 50):
+		logging.info('starting...')
 		pid = cls.get_pid()
 		if not pid == None:
-			print("%s is already running (PID: %d)" % (cls.exe_name, pid))
-			return
+			logging.warn("%s is already running (PID: %d)" % (cls.exe_name, pid))
+			return pid
 
 		exe_path = cls.get_exe_path()
 		command_line = "%s" % (exe_path)
@@ -55,18 +66,24 @@ class VS2007Process(object):
 		pp = subprocess.Popen(args)
 		first_time = time.time()
 		last_time = first_time
+		cnt = 0
 		while True:
+			cnt += 1
 			new_time = time.time()
 			pid = cls.get_pid()
 			if not pid == None:
-				break
-			if new_time - first_time > timeout:
+				logging.info('(%d) pid is not None')
+				return pid
+			d_time = new_time - first_time
+			logging.warn('(%d) d_time %d timeout %d' % (cnt, d_time, timeout))
+			if d_time > timeout:
+				logging.warn('timeout')
 				break
 			time.sleep(0.5)
 			if not pid == None:
 				print("SUCCESS %d" % pid)
-				return
-			else:
+				return pid
+			elif cnt > 10:
 				print("FAILED")
 				return
 
@@ -75,7 +92,8 @@ class VS2007Process(object):
 		def on_terminate(proc):
 			pass
 #			print "SUCCESS"
-			
+		
+		logging.info('VS2007Process.stop')
 		pid = cls.get_pid()
 		if pid == None:
 #			print "%s is not running" % cls.exe_name
@@ -109,23 +127,54 @@ class VS2007Process(object):
 		return ntpath.abspath(path)
 
 	@classmethod
-	def get_pid(cls):
-		for pid in psutil.pids():
+	def check_pid(cls, pid):
+		logging.info('VS2007Process.check_pid...')
+		try:
 			p = psutil.Process(pid)
+			cnt = 0
+			if p.name() == cls.exe_name:
+				logging.info('(%d) pid: %d [%s]' % (cnt, pid, cls.exe_name))
+				return True
+		except psutil.NoSuchProcess:
+			pass
+		except psutil.AccessDenied:
+			pass
+
+
+	@classmethod
+	def get_pid(cls):
+		logging.info('VS2007Process.get_pid...')
+		if not cls.pid == None:
+			return cls.pid
+		cnt = 0
+		for pid in psutil.pids():
+			cnt += 1
 			try:
+				p = psutil.Process(pid)
 				if p.name() == cls.exe_name:
+					logging.info('(%d) pid: %d [%s]' % (cnt, pid, cls.exe_name))
+					cls.pid = pid
 					return pid
+			except psutil.NoSuchProcess:
+				pass
 			except psutil.AccessDenied:
 				pass
 
 	@classmethod
+	def set_pid(cls, pid):
+		logging.info('VS2007Process.set_pid %d' % pid)
+		cls.pid = pid
+
+	@classmethod
 	def get_handle(cls):
+		logging.info("get_handle...\n")
 		api = VS2007API()
 		return api.g_hVSWnd
 
 	@classmethod
 	def set_handle(cls, handle):
-		api = VS2007API()
+		logging.info('VS2007Process.set_handle %d' % handle)
+		api = VS2007API(handle)
 		VS2007API.set_handle(handle)
 
 	def __new__(cls, *args, **kw):
@@ -159,15 +208,16 @@ class VS2007Process(object):
 			if version == '':
 				version = self.read_string_from_process_memory(0x00478AF8)
 			self._version = version
-
-		return self._version.decode()
+		return self._version.decode("UTF-8")
 
 	def _set_version(self, value):
+		print("_set_version...")
 		self._version = value
 
 	version = property(_get_version, _set_version)
 
 	def _get_pid(self):
+		logging.info('_get_pid')
 		if self._pid == None:
 			self._pid = self.get_pid()
 
@@ -176,8 +226,7 @@ class VS2007Process(object):
 	def _set_pid(self, value):
 		self._pid = value
 
-	pid = property(_get_pid, _set_pid)
-
+	#pid = property(_get_pid, _set_pid)
 
 	def _get_process(self):
 		if self._process == None:
@@ -238,18 +287,21 @@ class VS2007Process(object):
 
 
 	def is_file_opened(self):
+		logging.info('is_file_opened')
 		return self.get_value(self.address_for('open_flag'), ctypes.c_ulong()) == 1		
 
 	def pwd(self):
+		logging.info('pwd')
+		logging.info(self.pid)
 		if not (self.pid == None) and self.is_file_opened:
 			path = os.path.join(self.get_path(), self.get_dataname())
 			return os.path.abspath(path)
 
 	def get_path(self):
-		return self.read_string_from_process_memory(self.address_for('path'))
+		return self.read_string_from_process_memory(self.address_for('path')).decode('utf-8')
 
 	def get_dataname(self):
-		return self.read_string_from_process_memory(self.address_for('dataname'))
+		return self.read_string_from_process_memory(self.address_for('dataname')).decode('utf-8')
 
 	def get_address(self, ADDRESS1):
 #		pid = cls.get_pid()

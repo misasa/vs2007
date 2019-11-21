@@ -2,6 +2,9 @@ import ctypes
 import win32con
 import win32api
 import win32gui
+import pywintypes
+import sys
+import logging
 
 class COPYDATASTRUCT(ctypes.Structure):
     _fields_ = [('dwData',ctypes.c_void_p),("cbData",ctypes.c_void_p),("lpData",ctypes.c_void_p)]
@@ -18,28 +21,31 @@ class VS2007API(object):
 
 	@staticmethod
 	def wndProc(hWnd, message, wParam, lParam):
+		logging.info('wndProc %d %d %d %d' % (hWnd, message, wParam, lParam))
 
 		if message == VS2007API.VS_GET_HVSWND:
-#			print 'VS_GET_HVSWND'
+			logging.info('VS2007API.VS_GET_HVSWND')
 			VS2007API.GetVSHVSWND()
 			return 0
 		elif message == win32con.WM_COMMAND:
-#			print 'WM_COMMAND'
-			#SendCommand("TEST_CMD\0")
+			logging.info('win32con.WM_COMMAND')
 			return 0
 
 		elif message == win32con.WM_COPYDATA:
-#			print 'WM_COPYDATA'
+			logging.info('win32con.WM_COPYDATA')
 			pCDS = ctypes.cast(lParam, PCOPYDATASTRUCT)
-			VS2007API.g_r_message = ctypes.string_at(pCDS.contents.lpData, pCDS.contents.cbData)
+			VS2007API.g_r_message = ctypes.string_at(pCDS.contents.lpData, pCDS.contents.cbData).decode('utf-8')
 			return 0
 		elif message == win32con.WM_DESTROY:
-#			print 'Being destroyed'
+			logging.info('win32con.WM_DESTROY')
 			win32gui.PostQuitMessage(0)
 			return 0
 		elif message == VS2007API.g_uiGWM and wParam == VS2007API.VS_GET_HWND and lParam != hWnd:
+			logging.info('VS2007API.g_uiGWM')
+			logging.info('receive g_hVSWnd %d' % lParam)
 			VS2007API.g_hVSWnd = lParam
 		else:
+			logging.info('ELSE %d' % message)
 			return win32gui.DefWindowProc(hWnd, message, wParam, lParam)
 
 
@@ -49,6 +55,7 @@ class VS2007API(object):
 
 	@classmethod
 	def set_handle(cls, handle):
+		logging.info('VS2007API.set_handle %d' % handle)
 		cls.g_hVSWnd = handle
 
 	@classmethod
@@ -57,6 +64,7 @@ class VS2007API(object):
 
 	@classmethod
 	def GetVSHVSWND(cls, timeout):
+		logging.info('SendMessage %d %d %d %d' % (win32con.HWND_BROADCAST, cls.g_uiGWM, cls.VS_GET_HWND, cls.g_myhWnd))
 		win32gui.SendMessage(win32con.HWND_BROADCAST, cls.g_uiGWM, cls.VS_GET_HWND, cls.g_myhWnd)
 
 	@classmethod
@@ -77,7 +85,7 @@ class VS2007API(object):
 		try:
 			wndClassAtom = win32gui.RegisterClass(wndClass)
 		except Exception as e:
-			print(e)
+			logging.error(e)
 			raise e
 
 		hWindow = win32gui.CreateWindow(
@@ -90,13 +98,16 @@ class VS2007API(object):
 			)
 
 		if hWindow:
+			logging.info('g_myhWnd %d' % hWindow)
 			cls.g_myhWnd = hWindow
 		else:
-			print('Initialize Error!')
+			logging.critical('Initialize Error!')
 			sys.exit(1)
 
 
 	def __init__(self, hVSWnd = None):
+		logging.info('VS2007API.__init__')
+		self.logger = logging.getLogger(__name__)
 		timeout = 0
 		if self.g_myhWnd == None:
 			self.create_window()
@@ -108,6 +119,7 @@ class VS2007API(object):
 			self.g_hVSWnd = hVSWnd
 
 		if self.g_hVSWnd == None:
+			self.logger.info('g_hVSWnd is none')
 			self.GetVSHVSWND(timeout)
 
 	def send_command_and_receive_message(self, command_line, timeout = 0):
@@ -117,6 +129,8 @@ class VS2007API(object):
 				return self.g_r_message
 			else:
 				return "FAILURE"
+#		except:
+#			print(sys.exc_info())
 		except pywintypes.error as e:
 			error_code = e[0]
 			error_in = e[1]
@@ -124,10 +138,13 @@ class VS2007API(object):
 			print("ERROR(%d) in %s: %s" % (e[0], e[1], e[2]))
 
 	def SendCommand(self, command, timeout):
+		b_command = command.encode('UTF-8')
+		logging.info('SendCommand %s %d' % (b_command, timeout))
 		CDS = COPYDATASTRUCT()
 		CDS.dwData = 0
-		CDS.cbData = len(command)
-		bufr = ctypes.create_string_buffer(command)
+		CDS.cbData = len(b_command)
+		bufr = ctypes.create_string_buffer(b_command)
 		CDS.lpData = ctypes.addressof(bufr)
 		ptr = ctypes.addressof(CDS)
+		logging.info('SendMessage %d %d %d %d' % (self.g_hVSWnd, win32con.WM_COPYDATA, self.g_myhWnd, ptr))
 		return win32gui.SendMessage(self.g_hVSWnd, win32con.WM_COPYDATA, self.g_myhWnd, ptr)
