@@ -6,6 +6,7 @@ from vs2007.process import VS2007Process
 from vs2007.command_api import main, _parse_options
 from mock import MagicMock
 
+# py -m nose test.test_command_api
 saved = None
 
 def setup():
@@ -25,12 +26,15 @@ def teardown_mocks():
 	vs2007.process.VS2007Process = vs2007._VS2007Process
 	delattr(vs2007, '_VS2007Process')
 
+# py -m nose test.test_command_api:test_help
 def test_help():
+	print("test_help")
 	sys.argv = ['vs-api', '--help']
 	assert_raises(SystemExit, _parse_options)
 
-
+# py -m nose test.test_command_api:test_option
 def test_options():
+	print("test_options")
 	sys.argv = ['vs2007api', '--verbose', 'TEST_CMD']
 	(options, args) = _parse_options()
 	assert options.verbose
@@ -38,6 +42,7 @@ def test_options():
 
 @with_setup(setup_mocks, teardown_mocks)
 def test_get_handle_return_handle():
+	print("test_get_handle_return_handle")
 	sys.argv = ['vs2007api', '-g']
 	vs2007.process.VS2007Process.get_handle = MagicMock(return_value = 100)
 	assert_raises(SystemExit, main)
@@ -54,4 +59,3 @@ def test_set_handle():
 	sys.argv = ['vs2007api', 'TEST_CMD']
 	main()
 	mock_vs2007p.send_command.assert_called_once_with('TEST_CMD')
-

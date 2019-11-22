@@ -9,6 +9,7 @@ import win32api
 
 from vs2007.command_control import _parse_options, _start, _output, main
 
+# py -m nose test.test_command_control
 original_metod = None
 original = None
 saved = None
@@ -33,7 +34,7 @@ def teardown():
 
 @with_setup(setup, teardown)
 def test_version():
-  vs2007p.version = '1.120'
+  vs2007p.version = '1.120'.encode('utf-8')
   vs2007p.pid = 1100
   assert_equal(vs2007p.version, '1.120')
   assert_equal(vs2007p.pid, 1100)

@@ -1,5 +1,6 @@
 import sys
 import os
+import time
 import unittest
 from nose.tools import *
 from mock import MagicMock
@@ -10,134 +11,89 @@ from vs2007.process import VS2007Process
 from vs2007.api import VS2007API
 #from vs2007.control import *
 
-saved = None
-pid = None
-vs2007p = None
-
-def _setup():
-	print("setup...")
-	global saved
-	saved = sys.argv
-	start_vs()
-	global pid
-
-def _setup_112():
-	print("setup_112...")
-	global saved
-	saved = sys.argv
-	start_vs_112()
-	global pid
-	pid = get_pid()
-
-def setup_mock_api():
-	print("setup_mock_api...")
-	global original_api
-	original_api = vs2007p.api.send_command_and_receive_message
-	vs2007p.api.send_command_and_receive_message = MagicMock(return_value = 'SUCCESS' )	
-
-
-def teardown_mock_api():
-	print("teardown_mock_api...")
-	vs2007p.api.send_command_and_receive_message = original_api
-
-
-def _teardown():
-	print("teardown...")
-	stop_vs()
-	sys.argv = saved
+vs2007p = VS2007Process()
 
 def start_vs():
-	print("start_vs...")
-	#VS2007Process.program_subdirname = 'VS2007-1.120'
-	global vs2007p
 	VS2007Process.start()
-	vs2007p = VS2007Process()
 
 def stop_vs():
-	print("stop_vs...")
 	VS2007Process.stop()
 
-def test_is_running():
-	assert_equal(VS2007Process.is_running(), True)
+# py -m nose test.test_vs2007_process
+class TestWithMockAPICase:
+	def setup(self):
+		vs2007p.api.send_command_and_receive_message = MagicMock(return_value = 'SUCCESS')
 
-@with_setup(setup_mock_api, teardown_mock_api)
-def test_open_file_with_full_dirpath():
-	path = 'C:\\VS2007data'
-	dataname = 'GrtCCG06'
-	message = vs2007p.file_open(os.path.join(path, dataname))
-	vs2007p.api.send_command_and_receive_message.assert_called_once_with('FILE_OPEN C:\\VS2007data,GrtCCG06,NO')
-	#assert_equal(message, 'SUCCESS')
+	def test_open_file_with_full_dirpath(self):
+		path = 'C:\\VS2007data'
+		dataname = 'GrtCCG06'
+		message = vs2007p.file_open(os.path.join(path, dataname))
+		vs2007p.api.send_command_and_receive_message.assert_called_once_with('FILE_OPEN C:\\VS2007data,GrtCCG06,NO')
 
-@with_setup(setup_mock_api, teardown_mock_api)
-def test_open_file_with_full_filepath():
-	path = 'C:\\VS2007data'
-	dataname = 'GrtCCG06'
-	message = vs2007p.file_open(os.path.join(path, dataname, 'ADDRESS.DAT'), True)
-	vs2007p.api.send_command_and_receive_message.assert_called_once_with('FILE_OPEN C:\\VS2007data,GrtCCG06,YES')
+	def test_save_file(self):
+		print(vs2007p)
+		#message = vs2007p.file_save()
+		#vs2007p.api.send_command_and_receive_message.assert_called_once_with('FILE_SAVE')
 
-@with_setup(setup_mock_api, teardown_mock_api)
-def test_open_file_with_full_cygpath():
-	path = '/cygdrive/c/VS2007data'
-	dataname = 'GrtCCG06'
-	message = vs2007p.file_open(os.path.join(path, dataname, 'ADDRESS.DAT'), True)
-	vs2007p.api.send_command_and_receive_message.assert_called_once_with('FILE_OPEN C:\\VS2007data,GrtCCG06,YES')
+	def test_open_file_with_full_filepath(self):
+		path = 'C:\\VS2007data'
+		dataname = 'GrtCCG06'
+		message = vs2007p.file_open(os.path.join(path, dataname, 'ADDRESS.DAT'), True)
+		vs2007p.api.send_command_and_receive_message.assert_called_once_with('FILE_OPEN C:\\VS2007data,GrtCCG06,YES')
 
-@with_setup(setup_mock_api, teardown_mock_api)
-def test_open_file_with_full_msyspath():
-	path = '/c/VS2007data'
-	dataname = 'GrtCCG06'
-	message = vs2007p.file_open(os.path.join(path, dataname, 'ADDRESS.DAT'), True)
-	vs2007p.api.send_command_and_receive_message.assert_called_once_with('FILE_OPEN C:\\VS2007data,GrtCCG06,YES')
+	def test_open_file_with_full_cygpath(self):
+		path = '/cygdrive/c/VS2007data'
+		dataname = 'GrtCCG06'
+		message = vs2007p.file_open(os.path.join(path, dataname, 'ADDRESS.DAT'), True)
+		vs2007p.api.send_command_and_receive_message.assert_called_once_with('FILE_OPEN C:\\VS2007data,GrtCCG06,YES')
 
-@with_setup(setup_mock_api, teardown_mock_api)
-def test_open_file_with_invalid_path():
-	path = 'C:\\InvalidPath'
-	dataname = 'GrtCCG06'
-	assert_raises(ValueError, vs2007p.file_open, os.path.join(path, dataname, 'ADDRESS.DAT'), True)
+	def test_open_file_with_full_msyspath(self):
+		path = '/c/VS2007data'
+		dataname = 'GrtCCG06'
+		message = vs2007p.file_open(os.path.join(path, dataname, 'ADDRESS.DAT'), True)
+		vs2007p.api.send_command_and_receive_message.assert_called_once_with('FILE_OPEN C:\\VS2007data,GrtCCG06,YES')
 
-@with_setup(setup_mock_api, teardown_mock_api)
-def test_close_file():
-	message = vs2007p.file_close()
-	vs2007p.api.send_command_and_receive_message.assert_called_once_with('FILE_CLOSE NO')
+	def test_open_file_with_invalid_path(self):
+		path = 'C:\\InvalidPath'
+		dataname = 'GrtCCG06'
+		assert_raises(ValueError, vs2007p.file_open, os.path.join(path, dataname, 'ADDRESS.DAT'), True)
+	
+	def test_close_file(self):
+		message = vs2007p.file_close()
+		vs2007p.api.send_command_and_receive_message.assert_called_once_with('FILE_CLOSE NO')
 
-@with_setup(setup_mock_api, teardown_mock_api)
-def test_close_file_with_flag():
-	message = vs2007p.file_close(True)
-	vs2007p.api.send_command_and_receive_message.assert_called_once_with('FILE_CLOSE YES')
+	def test_close_file_with_flag(self):
+		message = vs2007p.file_close(True)
+		vs2007p.api.send_command_and_receive_message.assert_called_once_with('FILE_CLOSE YES')
 
-@with_setup(setup_mock_api, teardown_mock_api)
-def test_save_file():
-	message = vs2007p.file_save()
-	vs2007p.api.send_command_and_receive_message.assert_called_once_with('FILE_SAVE')
+	def test_save_file(self):
+		message = vs2007p.file_save()
+		vs2007p.api.send_command_and_receive_message.assert_called_once_with('FILE_SAVE')
 
-def test_get_path_and_dataname():
-#	VS2007Process.version = '1.120'
-#	api = VS2007API()
-	path = 'C:\\VS2007data'
-	dataname = 'GrtCCG06'
-	command = "FILE_OPEN %s,%s,NO" % (path, dataname)
-	vs2007p.api.send_command_and_receive_message(command, 0)
-	assert_equal(vs2007p.get_path(), path + '\\')
-	assert_equal(vs2007p.get_dataname(), dataname)	
-	assert_equal(vs2007p.pwd(), path + '\\' + dataname)
+	def teardown(self):
+		pass
 
-#@with_setup(None, teardown)
-
-
-def test_get_handle():
-#	handle = VS2007Process.get_handle()
-#	vs2007p._set_api(None)
-	vs2007.process.VS2007Process.set_handle(1111)
-	handle = VS2007Process.get_handle()
-	assert_equal(handle, 1112)
-
-#@with_setup(None, teardown)
-def test_stop():
-	pass
-
-class ProcessWithVSTestCase:
+# py -m nose test.test_vs2007_process:WithVSCase
+class WithVSCase:
 	def setup(self):
 		start_vs()
+
+	def test_get_path_and_dataname(self):
+		path = 'C:\\VS2007data'
+		dataname = 'GrtCCG06'
+		command = "FILE_OPEN %s,%s,YES" % (path, dataname)
+		assert_equal(VS2007Process().api.send_command_and_receive_message(command, 0), 'SUCCESS')
+		assert_equal(VS2007Process().get_path(), path + '\\')
+		assert_equal(VS2007Process().get_dataname(), dataname)	
+		assert_equal(VS2007Process().pwd(), path + '\\' + dataname)
+		addrl = VS2007Process().get_address_list()
+		assert len(addrl) > 0
+		assert len(addrl[0].get_attachlist()) > 0
+		for addr in addrl:
+			print(addr.to_s())
+		for addr in addrl:
+			for attach in addr.get_attachlist():
+				print(attach.to_s())
 
 	def test_is_running(self):
 		assert_equal(VS2007Process.is_running(), True)
@@ -147,7 +103,7 @@ class ProcessWithVSTestCase:
 		logger = logging.getLogger('')
 		with LogCapture() as logs:
 			handle = VS2007Process.get_handle()
-			assert_true(isinstance(handle, int))
+			assert_true(not handle == None)
 			assert 'get_handle...' in str(logs)
 
 	def test_api(self):
@@ -157,21 +113,18 @@ class ProcessWithVSTestCase:
 			assert_equal(VS2007Process().api.send_command_and_receive_message('TEST_CMD', 0), 'SUCCESS')
 			assert_equal(VS2007Process().api.send_command_and_receive_message('FILE_OPEN C:\\VS2007data,image2vs,YES', 0), 'SUCCESS')
 			assert_equal(VS2007Process().api.send_command_and_receive_message('FILE_CLOSE YES', 0), 'SUCCESS')
-			print(str(logs))
+			assert_equal(VS2007Process().api.send_command_and_receive_message('FILE_OPEN C:\\VS2007data,GrtCCG06,YES', 0), 'SUCCESS')
+			assert_equal(VS2007Process().api.send_command_and_receive_message('FILE_CLOSE YES', 0), 'SUCCESS')
 
-	def test_get_addresslist_with_open(self):
-		addrl = vs2007p.get_address_list()
-		assert len(addrl) > 0
-		assert len(addrl[0].get_attachlist()) > 0
-		for addr in addrl:
-			print(addr.to_s())
-		for addr in addrl:
-			for attach in addr.get_attachlist():
-				print(attach.to_s())
 
 	def teardown(self):
 		stop_vs()
 
-class ProcessWithoutVSTestCase:
-  def test_stop(self):
-	  assert_equal(VS2007Process.is_running(), False)
+
+# py -m nose test.test_vs2007_process:WithoutVSCase
+class WithoutVSCase:
+	def setup(self):
+		stop_vs()
+
+	def test_stop(self):
+		assert_equal(VS2007Process.is_running(), False)

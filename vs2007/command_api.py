@@ -106,7 +106,8 @@ def main():
             sys.exit(1)
     if options.interactive:
         while True:
-            print("vs-api>", file=sys.stderr, end="")
+            sys.stderr.write("vs-api>")
+            #print("vs-api>", file=sys.stderr, end="")
             try:
                 line = input()
                 print(_send_command(line))

@@ -119,8 +119,11 @@ class VS2007API(object):
 			self.g_hVSWnd = hVSWnd
 
 		if self.g_hVSWnd == None:
-			self.logger.info('g_hVSWnd is none')
+			logging.info('g_hVSWnd is None')
 			self.GetVSHVSWND(timeout)
+		else:
+			logging.info('g_hVSWnd is not None')
+
 
 	def send_command_and_receive_message(self, command_line, timeout = 0):
 		try:

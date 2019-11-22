@@ -54,15 +54,22 @@ class VS2007Process(object):
 
 	@classmethod
 	def start(cls, timeout = 50):
-		logging.info('starting...')
+		logging.info('VS2007Process.start')
 		pid = cls.get_pid()
 		if not pid == None:
 			logging.warn("%s is already running (PID: %d)" % (cls.exe_name, pid))
 			return pid
+		else:
+			logging.info('%s is not running' % cls.exe_name)
+
+		if not VS2007API.g_hVSWnd == None:
+			logging.warn('VS2007API.g_hVSWnd is not None')
+			VS2007API.g_hVSWnd = None
 
 		exe_path = cls.get_exe_path()
 		command_line = "%s" % (exe_path)
 		args = shlex.split(command_line)
+		logging.info('starting %s...' % command_line)
 		pp = subprocess.Popen(args)
 		first_time = time.time()
 		last_time = first_time
@@ -72,8 +79,8 @@ class VS2007Process(object):
 			new_time = time.time()
 			pid = cls.get_pid()
 			if not pid == None:
-				logging.info('(%d) pid is not None')
-				return pid
+				#logging.info('(%d) PID: %d' % (cnt, pid))
+				break
 			d_time = new_time - first_time
 			logging.warn('(%d) d_time %d timeout %d' % (cnt, d_time, timeout))
 			if d_time > timeout:
@@ -89,20 +96,30 @@ class VS2007Process(object):
 
 	@classmethod
 	def stop(cls):
-		def on_terminate(proc):
-			pass
-#			print "SUCCESS"
-		
 		logging.info('VS2007Process.stop')
+		def on_terminate(proc):
+			logging.info("%s is stopped." % cls.exe_name)
+			cls.pid = None
+			if not VS2007API.g_hVSWnd == None:
+				VS2007API.g_hVSWnd = None
+		
+
 		pid = cls.get_pid()
 		if pid == None:
-#			print "%s is not running" % cls.exe_name
+			logging.warn("%s is not running" % cls.exe_name)
 			return
-		proc = psutil.Process(pid)
-		proc.terminate()
-		gone, alive = psutil.wait_procs([proc], timeout = 15, callback=on_terminate)
-		for p in alive:
-			p.kill()
+		else:
+			logging.info("%s is running (PID: %d)" % (cls.exe_name, pid))
+
+		logging.info('stopping %s (PID: %d)...' % (cls.exe_name, pid))
+		try:
+			proc = psutil.Process(pid)
+			proc.terminate()
+			gone, alive = psutil.wait_procs([proc], timeout = 15, callback=on_terminate)
+			for p in alive:
+				p.kill()
+		except psutil.NoSuchProcess as e:
+			return
 
 	@classmethod
 	def _drive_with_path(cls, drive = 'C', path = ''):
@@ -136,9 +153,10 @@ class VS2007Process(object):
 				logging.info('(%d) pid: %d [%s]' % (cnt, pid, cls.exe_name))
 				return True
 		except psutil.NoSuchProcess:
-			pass
-		except psutil.AccessDenied:
-			pass
+			logging.info('NoSuchProcess')
+			return False
+		#except psutil.AccessDenied:
+		#	pass
 
 
 	@classmethod
@@ -239,7 +257,9 @@ class VS2007Process(object):
 	process = property(_get_process, _set_process)
 
 	def _get_api(self):
+		logging.debug('VS2007Process._get_api')
 		if self._api == None:
+			logging.debug('_api is None')
 			self._api = VS2007API()
 		return self._api
 
@@ -301,7 +321,11 @@ class VS2007Process(object):
 		return self.read_string_from_process_memory(self.address_for('path')).decode('utf-8')
 
 	def get_dataname(self):
-		return self.read_string_from_process_memory(self.address_for('dataname')).decode('utf-8')
+		logging.debug('VS2007Process#get_dataname')
+		logging.debug(self.address_for('dataname'))
+		string = self.read_string_from_process_memory(self.address_for('dataname')).decode('utf-8')
+		logging.debug(string)
+		return string
 
 	def get_address(self, ADDRESS1):
 #		pid = cls.get_pid()
