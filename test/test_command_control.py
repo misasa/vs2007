@@ -166,3 +166,12 @@ def test_list_attach():
 	main()
 	mock_vs2007p.get_address_list.assert_called_once_with(None)
 	mock_attach.to_s.assert_called_once_with()
+
+
+@with_setup(setup_mocks, teardown_mocks)
+def test_checkout():
+  surface_id = '20190903141611-024227'
+  path = 'C:\\VS2007data\\GrtCCG06'
+  sys.argv = ['vs', 'checkout', surface_id, path]
+  main()
+  mock_vs2007p.checkout.assert_called_once()

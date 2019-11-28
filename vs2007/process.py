@@ -8,8 +8,10 @@ import ctypes
 import win32api
 import ntpath
 import logging
+import yaml
 from ctypes import wintypes
 from vs2007.api import VS2007API
+from vs2007.medusa import VS2007Medusa
 from vs2007 import Address
 from vs2007 import Attach
 
@@ -184,9 +186,9 @@ class VS2007Process(object):
 		cls.pid = pid
 
 	@classmethod
-	def get_handle(cls):
+	def get_handle(cls, timeout = 1000):
 		logging.info("get_handle...\n")
-		api = VS2007API()
+		api = VS2007API(None, timeout)
 		return api.g_hVSWnd
 
 	@classmethod
@@ -209,11 +211,18 @@ class VS2007Process(object):
 		self._version = None
 		self._process = None
 		self._api = None
+		self._medusa_api = None
+		self._timeout = 50
+		#if 'timeout' in kw:
+		#	print(kw['timeout'])
+		#	self.timeout = kw['timeout']
+			
 		#self.api = VS2007API()
 
 	def send_command(self, command, timeout = 0):
+		self.timeout = timeout
 		if self.api:
-			return self.api.send_command_and_receive_message(command, timeout)
+			return self.api.send_command_and_receive_message(command, self.timeout)
 
 	def address_for(self, key):
 		dic = self.dic_address_for[key]
@@ -260,13 +269,34 @@ class VS2007Process(object):
 		logging.debug('VS2007Process._get_api')
 		if self._api == None:
 			logging.debug('_api is None')
-			self._api = VS2007API()
+			self._api = VS2007API(None, self.timeout)
 		return self._api
 
 	def _set_api(self, value):
 		self._api = value
 
 	api = property(_get_api, _set_api)
+
+
+	def _get_medusa_api(self):
+		logging.debug('VS2007Process._get_medusa_api')
+		if self._medusa_api == None:
+			logging.debug('_medusa_api is None')
+			self._medusa_api = VS2007Medusa()
+		return self._medusa_api
+
+	def _set_medusa_api(self, value):
+		self._medusa_api = value
+	
+	medusa_api = property(_get_medusa_api, _set_medusa_api)
+
+	def _get_timeout(self):
+		return self._timeout
+
+	def _set_timeout(self, value):
+		self._timeout = value
+
+	timeout = property(_get_timeout, _set_timeout)
 
 	def file_open(self, path, flag = False):
 		path = self._ntpath(path)
@@ -452,3 +482,40 @@ class VS2007Process(object):
 
 			current_adr = next_adr
 		return attachlist
+
+	def checkout(self, surface_id, path, flag = False):
+		logging.info("checkout")
+		logging.info("SURFACE-ID: %s VS-DIR:%s" %(surface_id, path))
+		_wapi = self.medusa_api
+
+		path = self._ntpath(path)
+#		if os.path.isdir(path):
+#			path = os.path.join(path, 'ADDRESS.DAT')
+
+#		if not os.path.isfile(path):
+#			raise ValueError("invalid path")
+
+#		dirname = os.path.dirname(path)
+		datadir = os.path.dirname(path)
+		dataname = os.path.basename(path)
+		config_path = os.path.join(path, "vs.config")
+		export_path = os.path.join(path, "exported.txt")
+		import_path = os.path.join(path,"imported.txt")
+
+		command = "FILE_NEW %s,%s,%s" % (datadir, dataname, 'YES' if flag else 'NO')
+		r_vs = self.api.send_command_and_receive_message(command)
+		if (r_vs == 'SUCCESS'):
+			record = _wapi.get_record(surface_id)
+			if (record['datum_type'] == 'Surface'):
+				with open(config_path, 'w') as config_file:
+					yaml.safe_dump({'surface_id': surface_id}, config_file)
+				spots = _wapi.get_spots(record['datum_id'])
+				logging.info("writing %s" % import_path)
+				with open(import_path, 'w') as import_file:
+					import_file.write('\t'.join(["Class", "Name", "X-Locate", "Y-Locate", "Data"]) + '\n')
+					for spot in spots:
+						import_file.write('\t'.join(["0", spot['name'], str(spot['world_x']),  str(spot['world_y']), spot['global_id']]) + '\n')
+				command = "FILE_IMPORT %s" % (import_path)
+				r_vs = self.api.send_command_and_receive_message(command)
+				
+

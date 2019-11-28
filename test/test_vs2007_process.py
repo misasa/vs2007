@@ -1,5 +1,7 @@
 import sys
 import os
+import shutil
+import ntpath
 import time
 import unittest
 from nose.tools import *
@@ -73,6 +75,29 @@ class TestWithMockAPICase:
 	def teardown(self):
 		pass
 
+class WithTmpCase:
+	def __init__(self):
+		self.tmp_dir = ntpath.abspath("./tmp")	
+
+	def setup(self):
+		if os.path.exists(self.tmp_dir):
+			shutil.rmtree(self.tmp_dir)
+		os.mkdir(self.tmp_dir)
+
+	def test_checkout(self):
+		surface_id = '20190903141611-024227'
+		path = './tmp/test-vs-1'
+		logging.basicConfig(level='INFO', format='%(asctime)s %(levelname)s:%(message)s')
+		logger = logging.getLogger('')
+		with LogCapture() as logs:
+			os.path.exists(path)
+			VS2007Process().checkout(surface_id, path)
+			#print(str(logs))
+
+	def teardown(self):
+		#if os.path.exists(self.tmp_dir):
+		#	shutil.rmtree(self.tmp_dir)	
+		pass
 # py -m nose test.test_vs2007_process:WithVSCase
 class WithVSCase:
 	def setup(self):
@@ -105,20 +130,23 @@ class WithVSCase:
 			handle = VS2007Process.get_handle()
 			assert_true(not handle == None)
 			assert 'get_handle...' in str(logs)
+			print(str(logs))
 
 	def test_api(self):
 		logging.basicConfig(level='INFO', format='%(asctime)s %(levelname)s:%(message)s')
 		logger = logging.getLogger('')
 		with LogCapture() as logs:
-			assert_equal(VS2007Process().api.send_command_and_receive_message('TEST_CMD', 0), 'SUCCESS')
-			assert_equal(VS2007Process().api.send_command_and_receive_message('FILE_OPEN C:\\VS2007data,image2vs,YES', 0), 'SUCCESS')
-			assert_equal(VS2007Process().api.send_command_and_receive_message('FILE_CLOSE YES', 0), 'SUCCESS')
-			assert_equal(VS2007Process().api.send_command_and_receive_message('FILE_OPEN C:\\VS2007data,GrtCCG06,YES', 0), 'SUCCESS')
-			assert_equal(VS2007Process().api.send_command_and_receive_message('FILE_CLOSE YES', 0), 'SUCCESS')
+			#assert_equal(VS2007Process().api.send_command_and_receive_message('TEST_CMD', 0), 'SUCCESS')
+			#assert_equal(VS2007Process().api.send_command_and_receive_message('FILE_OPEN C:\\VS2007data,image2vs,YES', 0), 'SUCCESS')
+			#assert_equal(VS2007Process().api.send_command_and_receive_message('FILE_CLOSE YES', 10), 'SUCCESS')
+			VS2007Process().send_command('FILE_OPEN C:\\VS2007data,GrtCCG06,YES', 5000)
+			#assert_equal(VS2007Process(timeout = 0).send_command('FILE_CLOSE YES'), 'SUCCESS')
+			print(str(logs))
 
 
 	def teardown(self):
-		stop_vs()
+		#stop_vs()
+		pass
 
 
 # py -m nose test.test_vs2007_process:WithoutVSCase

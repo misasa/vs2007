@@ -19,6 +19,8 @@ This is a command-line user interface for VisualStage2007.""",
       install_requires=[
             'pypiwin32',
             'psutil',
+            'requests',
+            "PyYAML",
           # -*- Extra requirements: -*-
       ],
       entry_points={

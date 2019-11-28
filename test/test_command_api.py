@@ -46,7 +46,7 @@ def test_get_handle_return_handle():
 	sys.argv = ['vs2007api', '-g']
 	vs2007.process.VS2007Process.get_handle = MagicMock(return_value = 100)
 	assert_raises(SystemExit, main)
-	vs2007.process.VS2007Process.get_handle.assert_called_once_with()
+	vs2007.process.VS2007Process.get_handle.assert_called_once_with(0)
 
 @with_setup(setup_mocks, teardown_mocks)
 def test_set_handle():
@@ -55,7 +55,7 @@ def test_set_handle():
 	vs2007.process.VS2007Process.set_handle.assert_called_once_with(12445)
 
 @with_setup(setup_mocks, teardown_mocks)
-def test_set_handle():
+def test_api():
 	sys.argv = ['vs2007api', 'TEST_CMD']
 	main()
-	mock_vs2007p.send_command.assert_called_once_with('TEST_CMD')
+	mock_vs2007p.send_command.assert_called_once_with('TEST_CMD', 0)

@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import vs2007
 import vs2007.process
+import vs2007.medusa
 import argparse
 import logging
 from vs2007._version import __version__ as _version
@@ -9,6 +10,10 @@ _progname = 'vs'
 def _process():
 	p = vs2007.process.VS2007Process()
 	return p
+
+def _medusa():
+	m = vs2007.medusa.VS2007Medusa()
+	return m
 
 def _start(args):
 	pid = vs2007.process.VS2007Process.start()
@@ -57,6 +62,13 @@ def _list(args):
 			elif args.address_or_attach == 'attach':
 				for attach in addr.get_attachlist():
 					print(attach.to_s())
+def _import(args):
+	if vs2007.process.VS2007Process.is_running():
+		_process().vs_import(args.vs_dir, args.surface_name)
+
+def _checkout(args):
+	if vs2007.process.VS2007Process.is_running():
+		_process().checkout(args.surface_id, args.vs_dir)
 
 def _show_info(args):
 	info = '%s %s' % (_progname, _version)
@@ -105,6 +117,16 @@ def _parse_options():
 	parser_list.add_argument('address_or_attach', choices = ['address', 'attach'], help = 'specify address or attach')
 	parser_list.add_argument('index', nargs = '?', type=int, help="specify index of address")
 	parser_list.set_defaults(func=_list)
+
+#	parser_checkout = subparsers.add_parser('import')
+#	parser_checkout.add_argument('vs_dir')
+#	parser_checkout.add_argument('surface_name')
+#	parser_checkout.set_defaults(func=_import)
+
+	parser_checkout = subparsers.add_parser('checkout')
+	parser_checkout.add_argument('surface_id')
+	parser_checkout.add_argument('vs_dir')
+	parser_checkout.set_defaults(func=_checkout)
 
 	args = parser.parse_args()
 	return args

@@ -36,6 +36,7 @@ HISTORY
     parser.add_option("-g","--get_handle",action="store_true",dest="get_handle",default=False,help="get window handle of VisualStage")    
     parser.add_option("--set_pid",action="store",type="int",dest="pid",default=0,help="specify PID of VisualStage")
     parser.add_option("--get_pid",action="store_true",dest="get_pid",default=False,help="get PID of VisualStage")    
+    parser.add_option("--timeout",action="store",type="int",dest="timeout", default=0,help="set timeout in msec (default: 0 msec)")
     parser.add_option("-l","--log_level",dest="log_level",default="WARNING",help="set log level")    
     return parser
 
@@ -45,10 +46,10 @@ def _parse_options():
 
     return options, args
 
-def _get_handle():
+def _get_handle(timeout):
     logging.info('_get_handle')
     if vs2007.process.VS2007Process.is_running():
-        handle = vs2007.process.VS2007Process.get_handle()
+        handle = vs2007.process.VS2007Process.get_handle(timeout)
         return handle
 
 def _set_handle(handle):
@@ -66,11 +67,11 @@ def _set_pid(pid):
     logging.info('_set_pid')
     vs2007.process.VS2007Process.set_pid(pid)    
 
-def _send_command(command):
+def _send_command(command, timeout = 0):
     logging.info('_send_command')
     if vs2007.process.VS2007Process.is_running():
         vs2007p = vs2007.process.VS2007Process()
-        return vs2007p.send_command(command)
+        return vs2007p.send_command(command, timeout)
 
 
 def main():
@@ -97,7 +98,7 @@ def main():
         _set_handle(handle)
 
     if options.get_handle:
-        handle = _get_handle()
+        handle = _get_handle(options.timeout)
         if handle and handle != 0:
             print("SUCCESS %d" % handle)
             sys.exit()
@@ -110,13 +111,13 @@ def main():
             #print("vs-api>", file=sys.stderr, end="")
             try:
                 line = input()
-                print(_send_command(line))
+                print(_send_command(line, options.timeout))
             except EOFError as e:
                 break            
 
     if len(args) > 0:
         for command in args:
-            print(_send_command(command))
+            print(_send_command(command, options.timeout))
 
 if __name__ == '__main__':
     main()

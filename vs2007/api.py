@@ -4,6 +4,7 @@ import win32api
 import win32gui
 import pywintypes
 import sys
+import time
 import logging
 
 class COPYDATASTRUCT(ctypes.Structure):
@@ -64,9 +65,20 @@ class VS2007API(object):
 
 	@classmethod
 	def GetVSHVSWND(cls, timeout):
-		logging.info('SendMessage %d %d %d %d' % (win32con.HWND_BROADCAST, cls.g_uiGWM, cls.VS_GET_HWND, cls.g_myhWnd))
-		win32gui.SendMessage(win32con.HWND_BROADCAST, cls.g_uiGWM, cls.VS_GET_HWND, cls.g_myhWnd)
-
+		#logging.info('SendMessage %d %d %d %d' % (win32con.HWND_BROADCAST, cls.g_uiGWM, cls.VS_GET_HWND, cls.g_myhWnd))
+		#win32gui.SendMessage(win32con.HWND_BROADCAST, cls.g_uiGWM, cls.VS_GET_HWND, cls.g_myhWnd)
+		logging.info('SendMessageTimeout %d %d %d %d %d %d' % (win32con.HWND_BROADCAST, cls.g_uiGWM, cls.VS_GET_HWND, cls.g_myhWnd, win32con.SMTO_ABORTIFHUNG, timeout))
+		try:
+			send_at = time.time()
+			r = win32gui.SendMessageTimeout(win32con.HWND_BROADCAST, cls.g_uiGWM, cls.VS_GET_HWND, cls.g_myhWnd, win32con.SMTO_ABORTIFHUNG, timeout)
+			if r:
+				logging.info("response_time: %f sec" % (time.time() - send_at))
+				logging.info(r)
+		except pywintypes.error as e:
+			logging.error(e)
+			logging.error("response_time: %f sec" % (time.time() - send_at))
+			return "TIMEOUT"
+		
 	@classmethod
 	def create_window(cls):
 		# create and initialize window class
@@ -105,10 +117,9 @@ class VS2007API(object):
 			sys.exit(1)
 
 
-	def __init__(self, hVSWnd = None):
+	def __init__(self, hVSWnd = None, timeout = 1000):
 		logging.info('VS2007API.__init__')
 		self.logger = logging.getLogger(__name__)
-		timeout = 0
 		if self.g_myhWnd == None:
 			self.create_window()
 			
@@ -125,20 +136,28 @@ class VS2007API(object):
 			logging.info('g_hVSWnd is not None')
 
 
-	def send_command_and_receive_message(self, command_line, timeout = 0):
+	def send_command_and_receive_message(self, command_line, timeout = 1000):
 		try:
+			send_at = time.time()
 			r = self.SendCommand(command_line, timeout)
 			if r:
+				logging.info(self.g_r_message)
+				logging.info("response_time: %f sec" % (time.time() - send_at))
 				return self.g_r_message
 			else:
+				logging.info("response_time: %f sec" % (time.time() - send_at))
 				return "FAILURE"
-#		except:
-#			print(sys.exc_info())
 		except pywintypes.error as e:
-			error_code = e[0]
-			error_in = e[1]
-			error_msg = e[2]
-			print("ERROR(%d) in %s: %s" % (e[0], e[1], e[2]))
+			logging.error(e)
+			logging.error("response_time: %f sec" % (time.time() - send_at))
+			return "TIMEOUT"
+			#error_code = e[0]
+			#error_in = e[1]
+			#error_msg = e[2]
+			#print("ERROR(%d) in %s: %s" % (e[0], e[1], e[2]))
+		#except:
+		#	logging.error("ERROR")
+#			print(sys.exc_info())
 
 	def SendCommand(self, command, timeout):
 		b_command = command.encode('UTF-8')
@@ -149,5 +168,7 @@ class VS2007API(object):
 		bufr = ctypes.create_string_buffer(b_command)
 		CDS.lpData = ctypes.addressof(bufr)
 		ptr = ctypes.addressof(CDS)
-		logging.info('SendMessage %d %d %d %d' % (self.g_hVSWnd, win32con.WM_COPYDATA, self.g_myhWnd, ptr))
-		return win32gui.SendMessage(self.g_hVSWnd, win32con.WM_COPYDATA, self.g_myhWnd, ptr)
+		#logging.info('SendMessage %d %d %d %d' % (self.g_hVSWnd, win32con.WM_COPYDATA, self.g_myhWnd, ptr))
+		#return win32gui.SendMessage(self.g_hVSWnd, win32con.WM_COPYDATA, self.g_myhWnd, ptr)
+		logging.info('SendMessageTimeout %d %d %d %d %d %d' % (self.g_hVSWnd, win32con.WM_COPYDATA, self.g_myhWnd, ptr, win32con.SMTO_ABORTIFHUNG, timeout))
+		return win32gui.SendMessageTimeout(self.g_hVSWnd, win32con.WM_COPYDATA, self.g_myhWnd, ptr, win32con.SMTO_ABORTIFHUNG, timeout)
