@@ -30,7 +30,7 @@ Download [vs2007-master.zip](https://gitlab.misasa.okayama-u.ac.jp/pythonpackage
     ADMIN.CMD> pip list
     ADMIN.CMD> pip uninstall vs2007
     $ wget https://gitlab.misasa.okayama-u.ac.jp/pythonpackage/vs2007/-/archive/develop/vs2007-master.zip
-    ADMIN.CMD> pip install archive.zip
+    ADMIN.CMD> pip install vs2007-master.zip
 
 Successful installation is confirmed by:
 
