@@ -64,7 +64,7 @@ def _list(args):
 					print(attach.to_s())
 def _import(args):
 	if vs2007.process.VS2007Process.is_running():
-		_process().vs_import(args.vs_dir, args.surface_name)
+		_process().remote_import(args.vs_dir, args.surface_name)
 
 def _checkout(args):
 	if vs2007.process.VS2007Process.is_running():
@@ -118,10 +118,10 @@ def _parse_options():
 	parser_list.add_argument('index', nargs = '?', type=int, help="specify index of address")
 	parser_list.set_defaults(func=_list)
 
-#	parser_checkout = subparsers.add_parser('import')
-#	parser_checkout.add_argument('vs_dir')
-#	parser_checkout.add_argument('surface_name')
-#	parser_checkout.set_defaults(func=_import)
+	parser_checkout = subparsers.add_parser('import')
+	parser_checkout.add_argument('vs_dir')
+	parser_checkout.add_argument('surface_name')
+	parser_checkout.set_defaults(func=_import)
 
 	parser_checkout = subparsers.add_parser('checkout')
 	parser_checkout.add_argument('surface_id')

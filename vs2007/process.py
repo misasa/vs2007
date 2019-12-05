@@ -416,6 +416,7 @@ class VS2007Process(object):
 
 
 	def get_address_list(self, iid = None):
+		base_dir = self.pwd()
 		addresslist = []
 		#See 0x00417439
 		pid = self.pid
@@ -428,7 +429,7 @@ class VS2007Process(object):
 			while True:
 				prev_adr = self.get_address(current_adr)
 				next_adr = self.get_address(current_adr + 4)
-				#print "curr: %x prev: %x next: %x" % (current_adr, prev_adr, next_adr)
+				#print("curr: %x prev: %x next: %x" % (current_adr, prev_adr, next_adr))
 		
 				base_adr = current_adr
 				base_adr += 0x10
@@ -440,7 +441,7 @@ class VS2007Process(object):
 						dic_addr = self.get_address_data(base_adr)
 						addr = Address(dic_addr)
 						#print "%d\t%d\t%s\t%.3f\t%.3f\t%s" % (dic_addr['address_id'], dic_addr['class_id'], dic_addr['name'], dic_addr['locate_x'], dic_addr['locate_y'], dic_addr['data'])
-						addr.attachlist = self.get_attachlist(base_adr)
+						addr.attachlist = self.get_attachlist(base_adr, base_dir)
 						addresslist.append(addr)
 
 				if next_adr == 0:
@@ -448,7 +449,7 @@ class VS2007Process(object):
 				current_adr = next_adr
 			return addresslist
 
-	def get_attachlist(self, base_adr):
+	def get_attachlist(self, base_adr, base_dir):
 		attachlist = []
 		address_id = self.get_value(base_adr + 0x3C, ctypes.c_ulong())
 		start_adr = self.get_value(base_adr + 0x4E98)
@@ -466,7 +467,7 @@ class VS2007Process(object):
 			flag = flag & 0x4
 			if flag == 0:
 				dic_attach = self.get_attach_data(base_adr)
-				obj = Attach(dic_attach)
+				obj = Attach(dic_attach, base_dir = base_dir)
 				obj.address_id = address_id
 				attachlist.append(obj)
 				#line = "%d\t%d\t%d\t%s\t%s" % (address_id,dic_attach['attach_id'],dic_attach['class_id'],dic_attach['name'],dic_attach['file'])
@@ -483,19 +484,30 @@ class VS2007Process(object):
 			current_adr = next_adr
 		return attachlist
 
+	def remote_import(self, path, surface_name, flag = False):
+		logging.info("remote_import")
+		logging.info("VS-DIR %s SURFACE:%s" %(path, surface_name))
+		if self.file_open(path) == "SUCCESS":
+			_wapi = self.medusa_api
+			spots = []
+			attachs = []
+			addrl = self.get_address_list()
+			for addr in addrl:
+				#spots.append(addr.to_spot()) 
+				for attach in addr.get_attachlist():
+					if ((not attach.what() == None) and (not attach.is_cropped()) and (not attach.is_warped())):
+						attachs.append(attach)
+					#print(attach.to_s())
+			surface = _wapi.create_surface(surface_name, addrs=addrl, attachs=attachs)
+			#surface = {'id': 79}
+
+
 	def checkout(self, surface_id, path, flag = False):
 		logging.info("checkout")
 		logging.info("SURFACE-ID: %s VS-DIR:%s" %(surface_id, path))
 		_wapi = self.medusa_api
 
 		path = self._ntpath(path)
-#		if os.path.isdir(path):
-#			path = os.path.join(path, 'ADDRESS.DAT')
-
-#		if not os.path.isfile(path):
-#			raise ValueError("invalid path")
-
-#		dirname = os.path.dirname(path)
 		datadir = os.path.dirname(path)
 		dataname = os.path.basename(path)
 		config_path = os.path.join(path, "vs.config")

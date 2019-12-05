@@ -21,6 +21,7 @@ This is a command-line user interface for VisualStage2007.""",
             'psutil',
             'requests',
             "PyYAML",
+            "pillow",
           # -*- Extra requirements: -*-
       ],
       entry_points={

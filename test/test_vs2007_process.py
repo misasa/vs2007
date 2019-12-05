@@ -8,6 +8,7 @@ from nose.tools import *
 from mock import MagicMock
 from testfixtures import LogCapture
 import logging
+import random
 import vs2007
 from vs2007.process import VS2007Process
 from vs2007.api import VS2007API
@@ -78,11 +79,16 @@ class TestWithMockAPICase:
 class WithTmpCase:
 	def __init__(self):
 		self.tmp_dir = ntpath.abspath("./tmp")	
+		self.data_dir = os.path.join(os.path.dirname(__file__), 'data')
 
 	def setup(self):
+		print("setting up....")
+		VS2007Process.start()
 		if os.path.exists(self.tmp_dir):
 			shutil.rmtree(self.tmp_dir)
 		os.mkdir(self.tmp_dir)
+		shutil.copytree(os.path.join(self.data_dir, 'dd_test'),os.path.join(self.tmp_dir, "dd_test"))
+
 
 	def test_checkout(self):
 		surface_id = '20190903141611-024227'
@@ -93,11 +99,21 @@ class WithTmpCase:
 			os.path.exists(path)
 			VS2007Process().checkout(surface_id, path)
 			#print(str(logs))
+	def test_import(self):
+		path = './tmp/dd_test'
+		surface_name = 'dd_test_' + str(random.randint(0,999))
+		logging.basicConfig(level='INFO', format='%(asctime)s %(levelname)s:%(message)s')
+		logger = logging.getLogger('')
+		with LogCapture() as logs:
+			os.path.exists(path)
+			VS2007Process().remote_import(path, surface_name)
+			print(str(logs))
 
 	def teardown(self):
 		#if os.path.exists(self.tmp_dir):
 		#	shutil.rmtree(self.tmp_dir)	
 		pass
+
 # py -m nose test.test_vs2007_process:WithVSCase
 class WithVSCase:
 	def setup(self):
