@@ -25,12 +25,12 @@ Include "C:\Python37\;C:\Python37\Scripts\" to %PATH%.
 
 # Installation
 
-Download [archive.zip](https://gitlab.misasa.okayama-u.ac.jp/pythonpackage/vs2007/-/archive/develop/vs2007-develop.zip) to a local directory and install it as Administrator as:
+Download [vs2007-master.zip](https://gitlab.misasa.okayama-u.ac.jp/pythonpackage/vs2007/-/archive/develop/vs2007-master.zip) to a local directory and install it as Administrator as:
 
     ADMIN.CMD> pip list
     ADMIN.CMD> pip uninstall vs2007
-    $ wget https://gitlab.misasa.okayama-u.ac.jp/pythonpackage/vs2007/-/archive/develop/vs2007-develop.zip
-    ADMIN.CMD> pip install archive.zip
+    $ wget https://gitlab.misasa.okayama-u.ac.jp/pythonpackage/vs2007/-/archive/develop/vs2007-master.zip
+    ADMIN.CMD> pip install vs2007-master.zip
 
 Successful installation is confirmed by:
 
