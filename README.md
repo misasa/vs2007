@@ -31,9 +31,11 @@ Install this package as Administrator as:
 
 or download [vs2007-master.zip](https://gitlab.misasa.okayama-u.ac.jp/pythonpackage/vs2007/-/archive/develop/vs2007-master.zip) to a local directory and install it as Administrator as:
 
+    $ cd ~/Downloads/
+    $ wget https://gitlab.misasa.okayama-u.ac.jp/pythonpackage/vs2007/-/archive/develop/vs2007-master.zip
+    ADMIN.CMD> cd %USERPROFILE%\Downloads\
     ADMIN.CMD> pip list
     ADMIN.CMD> pip uninstall vs2007
-    $ wget https://gitlab.misasa.okayama-u.ac.jp/pythonpackage/vs2007/-/archive/develop/vs2007-master.zip
     ADMIN.CMD> pip install vs2007-master.zip
 
 Successful installation is confirmed by:
