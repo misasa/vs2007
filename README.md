@@ -21,7 +21,7 @@ likely this also works with VisualStage 2007 (version 1.2).
 
 ## [Python 3.7 for Windows](https://www.python.org/downloads/windows/)
 
-Include "C:\Python37\;C:\Python37\Scripts\" to %PATH%.
+Include "C:\Program Files\Python37\;C:\Program Files\Python37\Scripts\" in %PATH%.
 
 # Installation
 
