@@ -231,8 +231,8 @@ class VS2007Process(object):
 
 	def _get_version(self):
 		if self._version == None:
-			version = self.read_string_from_process_memory(0x00475A48).decode('utf-8')
-			if version == '':
+			version = self.read_string_from_process_memory(0x00475A48)
+			if version == b'':
 				version = self.read_string_from_process_memory(0x00478AF8)
 			self._version = version
 		return self._version.decode("UTF-8")
