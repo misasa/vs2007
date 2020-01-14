@@ -279,10 +279,12 @@ class VS2007Process(object):
 
 
 	def _get_medusa_api(self):
-		logging.debug('VS2007Process._get_medusa_api')
+		logging.info('VS2007Process._get_medusa_api')
 		if self._medusa_api == None:
-			logging.debug('_medusa_api is None')
+			logging.info('_medusa_api is None')
 			self._medusa_api = VS2007Medusa()
+		else:
+			logging.info('_medusa_api is not None')
 		return self._medusa_api
 
 	def _set_medusa_api(self, value):
@@ -487,20 +489,41 @@ class VS2007Process(object):
 	def remote_import(self, path, surface_name, flag = False):
 		logging.info("remote_import")
 		logging.info("VS-DIR %s SURFACE:%s" %(path, surface_name))
-		if self.file_open(path) == "SUCCESS":
-			_wapi = self.medusa_api
-			spots = []
-			attachs = []
-			addrl = self.get_address_list()
-			for addr in addrl:
-				#spots.append(addr.to_spot()) 
-				for attach in addr.get_attachlist():
-					if ((not attach.what() == None) and (not attach.is_cropped()) and (not attach.is_warped())):
-						attachs.append(attach)
-					#print(attach.to_s())
-			surface = _wapi.create_surface(surface_name, addrs=addrl, attachs=attachs)
-			#surface = {'id': 79}
+		if not self.file_open(path) == "SUCCESS":
+			raise RuntimeError('can not open %s.' % (path))
 
+		_wapi = self.medusa_api
+		remote_objs = _wapi.find_surface(surface_name)
+		if not len(remote_objs) == 0:
+			raise RuntimeError('%s <surface: %s> already exists.' % (surface_name, remote_objs[0]['global_id']))
+		spots = []
+		attachs = []
+		addrl = self.get_address_list()
+		for addr in addrl:
+			#spots.append(addr.to_spot()) 
+			for attach in addr.get_attachlist():
+				if ((not attach.what() == None) and (not attach.is_cropped()) and (not attach.is_warped())):
+					attachs.append(attach)
+				#print(attach.to_s())
+		surface = _wapi.create_surface(surface_name, addrs=addrl, attachs=attachs)
+
+	def remote_update(self, path, surface_name):
+		logging.info("remote_update")
+		logging.info("VS-DIR %s SURFACE:%s" %(path, surface_name))
+		if not self.file_open(path) == "SUCCESS":
+			raise RuntimeError('can not open %s.' % (path))
+		attachs = []
+		addrl = self.get_address_list()
+		for addr in addrl:
+			for attach in addr.get_attachlist():
+				if ((not attach.what() == None) and (not attach.is_cropped()) and (not attach.is_warped())):
+					attachs.append(attach)
+		_wapi = self.medusa_api
+		remote_objs = _wapi.find_surface(surface_name)
+		if len(remote_objs) == 0:
+			raise RuntimeError('surface %s does not exists.' % (surface_name))
+		surface = remote_objs[0]
+		_wapi.update_surface(surface, addrs=addrl, attachs=attachs)
 
 	def checkout(self, surface_id, path, flag = False):
 		logging.info("checkout")

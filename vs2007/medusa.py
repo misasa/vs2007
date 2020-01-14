@@ -35,6 +35,33 @@ class VS2007Medusa(object):
         if (r_get.status_code == 200):
             return r_get.json()
     
+    def find_surface(self, surface_name, **kwargs):
+        url_items = self.config['uri'] + '/surfaces.json?q[name_eq]=' + surface_name
+        r_get = requests.get(url_items, auth = (self.config['user'], self.config['password']))
+        if (r_get.status_code == 200):
+            return r_get.json()
+
+    def update_surface(self, surface, **kwargs):
+        url_items = format("%s/surfaces/%d/images.json" % (self.config['uri'], surface['id']))
+        r_get = requests.get(url_items, auth = (self.config['user'], self.config['password']))
+        if (r_get.status_code == 200):
+            surface_images = r_get.json()
+            if ('attachs' in kwargs.keys()):
+                for attach in kwargs['attachs']:
+                    di = attach.to_dict()
+                    path, ext = os.path.splitext(attach.path)
+                    filename = di['name'] + ext
+                    md5 = attach.md5()
+                    idx = next((i for i, e in enumerate(surface_images) if e['image']['md5hash'] == md5), None)
+                    if idx is None:
+                        logging.info("Can not find surface_image with md5hash %s" % md5)
+                    else:
+                        surface_image = surface_images[idx]
+                        url_up = self.config['uri'] + format('/surfaces/%d/images/%d.json' % (surface['id'], surface_image['image_id']))
+                        payload = {}
+                        payload['surface_image[corners_on_world]'] = ':'.join([format("%.4f,%.4f" % (x,y))  for x,y in  attach.corners_on_world()])
+                        r_put = requests.put(url_up, data = payload, auth = (self.config['user'], self.config['password']))
+
     def create_surface(self, surface_name, **kwargs):
         url_items = self.config['uri'] + '/surfaces.json'
         payload = {'surface[name]': surface_name}
@@ -64,6 +91,8 @@ class VS2007Medusa(object):
                         payload = {}
                         payload['surface_image[corners_on_world]'] = ':'.join([format("%.4f,%.4f" % (x,y))  for x,y in  attach.corners_on_world()])
                         r_put = requests.put(url_up, data = payload, auth = (self.config['user'], self.config['password']))
+        else:
+            r_post.raise_for_status()
 
     def get_spots(self, surface_id):
         url_items = self.config['uri'] + '/surfaces/' + str(surface_id) + '/spots.json'

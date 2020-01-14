@@ -1,6 +1,8 @@
 from PIL import Image
 import imghdr
 import os
+import hashlib
+
 class Address(object):
 	def __init__(self, *args, **kw):
 		self.__dict__ = args[0]
@@ -38,6 +40,16 @@ class Attach(object):
 	def path(self):
 		return self._dict__['path']
 
+	def md5(self):
+		hash = hashlib.new('md5')
+		with open(self.path, 'rb') as f:
+			while True:
+				chunk = f.read(2048 * hash.block_size)
+				if len(chunk) == 0:
+					break
+				hash.update(chunk)
+		return hash.hexdigest()
+
 	def what(self):
 		return imghdr.what(self.path)
 
@@ -48,11 +60,20 @@ class Attach(object):
 	def corners_on_world(self):
 		di = self.to_dict()
 		c = [di['locate_x'], di['locate_y']]
+		i = [di['center_x'], di['center_y']]
 		s = [di['size_x'],di['size_y']]
-		lu = [(c[0] - s[0]/2.0), (c[1] + s[1]/2.0)]
-		ru = [(c[0] + s[0]/2.0), (c[1] + s[1]/2.0)]
-		rb = [(c[0] + s[0]/2.0), (c[1] - s[1]/2.0)]
-		lb = [(c[0] - s[0]/2.0), (c[1] - s[1]/2.0)]
+		x_l = c[0] - i[0]
+		x_r = c[0] + (s[0] - i[0])
+		y_u = c[1] + i[1]
+		y_b = c[1] - (s[1] - i[1]) 
+		#lu = [(c[0] - s[0]/2.0), (c[1] + s[1]/2.0)]
+		#ru = [(c[0] + s[0]/2.0), (c[1] + s[1]/2.0)]
+		#rb = [(c[0] + s[0]/2.0), (c[1] - s[1]/2.0)]
+		#lb = [(c[0] - s[0]/2.0), (c[1] - s[1]/2.0)]
+		lu = [x_l, y_u]
+		ru = [x_r, y_u]
+		rb = [x_r, y_b]
+		lb = [x_l, y_b]
 		return [lu,ru,rb,lb]
 
 	def to_s(self):

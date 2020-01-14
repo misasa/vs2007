@@ -66,6 +66,10 @@ def _import(args):
 	if vs2007.process.VS2007Process.is_running():
 		_process().remote_import(args.vs_dir, args.surface_name)
 
+def _commit(args):
+	if vs2007.process.VS2007Process.is_running():
+		_process().remote_update(args.vs_dir, args.surface_name)
+
 def _checkout(args):
 	if vs2007.process.VS2007Process.is_running():
 		_process().checkout(args.surface_id, args.vs_dir)
@@ -122,6 +126,11 @@ def _parse_options():
 	parser_checkout.add_argument('vs_dir')
 	parser_checkout.add_argument('surface_name')
 	parser_checkout.set_defaults(func=_import)
+
+	parser_checkout = subparsers.add_parser('commit')
+	parser_checkout.add_argument('vs_dir')
+	parser_checkout.add_argument('surface_name')
+	parser_checkout.set_defaults(func=_commit)
 
 	parser_checkout = subparsers.add_parser('checkout')
 	parser_checkout.add_argument('surface_id')
