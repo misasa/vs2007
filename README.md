@@ -27,7 +27,7 @@ Include "C:\Python37\;C:\Python37\Scripts\" in %PATH%.
 
 Install this package as Administrator as:
 
-    ADMIN.CMD> pip install git+https://xxxxx
+    ADMIN.CMD> pip install git+https://gitlab.misasa.okayama-u.ac.jp/pythonpackage/vs2007/-/archive/master/vs2007-master.zip
 
 or download [vs2007-master.zip](https://gitlab.misasa.okayama-u.ac.jp/pythonpackage/vs2007/-/archive/master/vs2007-master.zip) to a local directory and install it as Administrator as:
 
