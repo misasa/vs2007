@@ -43,20 +43,20 @@ class VS2007Process(object):
 
 	@classmethod
 	def is_running(cls):
-		logging.info('VS2007Process.is_running')
+		logging.debug('VS2007Process.is_running')
 		if cls.pid == None:
-			logging.info('VS2007Process.pid is None')
+			logging.debug('VS2007Process.pid is None')
 			pid = cls.get_pid()
 			return not pid == None
 		else:
-			logging.info('VS2007Process.pid is %d' % cls.pid)
+			logging.debug('VS2007Process.pid is %d' % cls.pid)
 			return cls.check_pid(cls.pid)
 		#pid = cls.get_pid()
 		#return not pid == None
 
 	@classmethod
 	def start(cls, timeout = 50):
-		logging.info('VS2007Process.start')
+		logging.debug('VS2007Process.start')
 		pid = cls.get_pid()
 		if not pid == None:
 			logging.warn("%s is already running (PID: %d)" % (cls.exe_name, pid))
@@ -98,7 +98,7 @@ class VS2007Process(object):
 
 	@classmethod
 	def stop(cls):
-		logging.info('VS2007Process.stop')
+		logging.debug('VS2007Process.stop')
 		def on_terminate(proc):
 			logging.info("%s is stopped." % cls.exe_name)
 			cls.pid = None
@@ -147,15 +147,15 @@ class VS2007Process(object):
 
 	@classmethod
 	def check_pid(cls, pid):
-		logging.info('VS2007Process.check_pid...')
+		logging.debug('VS2007Process.check_pid...')
 		try:
 			p = psutil.Process(pid)
 			cnt = 0
 			if p.name() == cls.exe_name:
-				logging.info('(%d) pid: %d [%s]' % (cnt, pid, cls.exe_name))
+				logging.debug('(%d) pid: %d [%s]' % (cnt, pid, cls.exe_name))
 				return True
 		except psutil.NoSuchProcess:
-			logging.info('NoSuchProcess')
+			logging.debug('NoSuchProcess')
 			return False
 		#except psutil.AccessDenied:
 		#	pass
@@ -163,7 +163,7 @@ class VS2007Process(object):
 
 	@classmethod
 	def get_pid(cls):
-		logging.info('VS2007Process.get_pid...')
+		logging.debug('VS2007Process.get_pid...')
 		if not cls.pid == None:
 			return cls.pid
 		cnt = 0
@@ -172,7 +172,7 @@ class VS2007Process(object):
 			try:
 				p = psutil.Process(pid)
 				if p.name() == cls.exe_name:
-					logging.info('(%d) pid: %d [%s]' % (cnt, pid, cls.exe_name))
+					logging.debug('(%d) pid: %d [%s]' % (cnt, pid, cls.exe_name))
 					cls.pid = pid
 					return pid
 			except psutil.NoSuchProcess:
@@ -182,18 +182,18 @@ class VS2007Process(object):
 
 	@classmethod
 	def set_pid(cls, pid):
-		logging.info('VS2007Process.set_pid %d' % pid)
+		logging.debug('VS2007Process.set_pid %d' % pid)
 		cls.pid = pid
 
 	@classmethod
 	def get_handle(cls, timeout = 1000):
-		logging.info("get_handle...\n")
+		logging.debug("get_handle...\n")
 		api = VS2007API(None, timeout)
 		return api.g_hVSWnd
 
 	@classmethod
 	def set_handle(cls, handle):
-		logging.info('VS2007Process.set_handle %d' % handle)
+		logging.debug('VS2007Process.set_handle %d' % handle)
 		api = VS2007API(handle)
 		VS2007API.set_handle(handle)
 
@@ -244,7 +244,7 @@ class VS2007Process(object):
 	version = property(_get_version, _set_version)
 
 	def _get_pid(self):
-		logging.info('_get_pid')
+		logging.debug('_get_pid')
 		if self._pid == None:
 			self._pid = self.get_pid()
 
@@ -279,12 +279,12 @@ class VS2007Process(object):
 
 
 	def _get_medusa_api(self):
-		logging.info('VS2007Process._get_medusa_api')
+		logging.debug('VS2007Process._get_medusa_api')
 		if self._medusa_api == None:
-			logging.info('_medusa_api is None')
+			logging.debug('_medusa_api is None')
 			self._medusa_api = VS2007Medusa()
 		else:
-			logging.info('_medusa_api is not None')
+			logging.debug('_medusa_api is not None')
 		return self._medusa_api
 
 	def _set_medusa_api(self, value):
@@ -339,12 +339,12 @@ class VS2007Process(object):
 
 
 	def is_file_opened(self):
-		logging.info('is_file_opened')
+		logging.debug('is_file_opened')
 		return self.get_value(self.address_for('open_flag'), ctypes.c_ulong()) == 1		
 
 	def pwd(self):
-		logging.info('pwd')
-		logging.info(self.pid)
+		logging.debug('pwd')
+		logging.debug(self.pid)
 		if not (self.pid == None) and self.is_file_opened:
 			path = os.path.join(self.get_path(), self.get_dataname())
 			return os.path.abspath(path)
@@ -487,8 +487,8 @@ class VS2007Process(object):
 		return attachlist
 
 	def remote_import(self, path, surface_name, flag = False):
-		logging.info("remote_import")
-		logging.info("VS-DIR %s SURFACE:%s" %(path, surface_name))
+		logging.debug("remote_import")
+		logging.debug("VS-DIR %s SURFACE:%s" %(path, surface_name))
 		if not self.file_open(path) == "SUCCESS":
 			raise RuntimeError('can not open %s.' % (path))
 
@@ -508,8 +508,8 @@ class VS2007Process(object):
 		surface = _wapi.create_surface(surface_name, addrs=addrl, attachs=attachs)
 
 	def remote_update(self, path, surface_name):
-		logging.info("remote_update")
-		logging.info("VS-DIR %s SURFACE:%s" %(path, surface_name))
+		logging.debug("remote_update")
+		logging.debug("VS-DIR %s SURFACE:%s" %(path, surface_name))
 		if not self.file_open(path) == "SUCCESS":
 			raise RuntimeError('can not open %s.' % (path))
 		attachs = []
@@ -526,8 +526,8 @@ class VS2007Process(object):
 		_wapi.update_surface(surface, addrs=addrl, attachs=attachs)
 
 	def checkout(self, surface_id, path, flag = False):
-		logging.info("checkout")
-		logging.info("SURFACE-ID: %s VS-DIR:%s" %(surface_id, path))
+		logging.debug("checkout")
+		logging.debug("SURFACE-ID: %s VS-DIR:%s" %(surface_id, path))
 		_wapi = self.medusa_api
 
 		path = self._ntpath(path)
@@ -545,7 +545,7 @@ class VS2007Process(object):
 				with open(config_path, 'w') as config_file:
 					yaml.safe_dump({'surface_id': surface_id}, config_file)
 				spots = _wapi.get_spots(record['datum_id'])
-				logging.info("writing %s" % import_path)
+				logging.debug("writing %s" % import_path)
 				with open(import_path, 'w') as import_file:
 					import_file.write('\t'.join(["Class", "Name", "X-Locate", "Y-Locate", "Data"]) + '\n')
 					for spot in spots:

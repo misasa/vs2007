@@ -22,7 +22,7 @@ def start_vs():
 def stop_vs():
 	VS2007Process.stop()
 
-# py -m nose test.test_vs2007_process
+# py -m nose test/test_vs2007_process
 class TestWithMockAPICase:
 	def setup(self):
 		vs2007p.api.send_command_and_receive_message = MagicMock(return_value = 'SUCCESS')

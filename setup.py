@@ -22,12 +22,14 @@ This is a command-line user interface for VisualStage2007.""",
             'requests',
             "PyYAML",
             "pillow",
+            "paho-mqtt",
           # -*- Extra requirements: -*-
       ],
       entry_points={
             "console_scripts": [
                   "vs = vs2007.command_control:main",
                   "vs-api = vs2007.command_api:main",
+                  "vs-srv = vs2007.mqtt_client:main",
             ]},
       test_suite='nose.collector',
       )
