@@ -29,7 +29,7 @@ This is a command-line user interface for VisualStage2007.""",
             "console_scripts": [
                   "vs = vs2007.command_control:main",
                   "vs-api = vs2007.command_api:main",
-                  "vs-srv = vs2007.mqtt_client:main",
+                  "vs-sentinel = vs2007.mqtt_client:main",
             ]},
       test_suite='nose.collector',
       )

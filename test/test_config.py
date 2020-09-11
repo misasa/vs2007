@@ -27,18 +27,17 @@ def teardown():
 @with_setup(setup, teardown)
 def test_config_without_existing_file():
     vs2007.config_path = 'tmp/.vs2007rc'
-    #shutil.copy(os.path.join(files_dir, '.vs2007rc'),'tmp')
-    #vs2007.Config.default_path = config_path
-    #config = vs2007.Config()
-    print(vs2007.default_config)
     eq_(vs2007.default_config, vs2007.config())
 
 def test_config_with_existing_file():
     config_path = 'tmp/.vs2007rc'
     vs2007.config_path = config_path
     mykey = 'hogehoge'
-    config = {'mqtt_topic': mykey}
+    config = {'stage_name': mykey}
     with open(config_path, 'w') as f:
       yaml.safe_dump(config, f)
-    assert 'mqtt_topic' in vs2007.config()
-    assert vs2007.config()['mqtt_topic'] == mykey
+    assert 'stage_name' in vs2007.config()
+    assert vs2007.config()['stage_name'] == mykey
+    cfg = vs2007.Config()
+    assert cfg.config['stage_name'] == mykey
+

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 from optparse import OptionParser
-import sys
+import sys, os
 import logging
 import vs2007
 import vs2007.process
@@ -15,7 +15,7 @@ from time import sleep
 import signal
 signal.signal(signal.SIGINT,signal.SIG_DFL)
 
-prog = "vs-srv"
+prog = "vs-sentinel"
 
 stage_info = {	"status":{
                             "isConnected":"false",
@@ -28,13 +28,18 @@ stage_info = {	"status":{
             }
 
 vsapi = None
-config = vs2007.config()
+config = None
+#config = vs2007.config()
+#config = vs2007.Config().config
 options = {}
+#def _config():
 
 def _process():
     return vs2007.process.VS2007Process()
 
 def _parser():
+    global config
+    config = vs2007.config()
     parser = OptionParser("""usage: %prog [options]
 
 SYNOPSIS AND USAGE
@@ -57,9 +62,10 @@ HISTORY
   September 2, 2020: Add Program
 """)
     parser.add_option("-v","--verbose",action="store_true",dest="verbose",default=False,help="make lots of noise")
-    parser.add_option("--mqtt-topic",action="store",type="string",dest="mqtt_topic", default=config['mqtt_topic'],help="set the topic of the MQTT message (default: '%default') which the program will publish and subscribe to.")
+    parser.add_option("--stage-name",action="store",type="string",dest="stage_name", default=config['stage_name'],help="set the name of stage to identify the MQTT message (default: '%default') which the program will publish and subscribe to.")
     parser.add_option("--mqtt-host",action="store",type="string",dest="mqtt_host", default=config['mqtt_host'],help="set the address of the MQTT broker (default: %default) which the program will connect to.")
     parser.add_option("--mqtt-port",action="store",type="int",dest="mqtt_port", default=config['mqtt_port'],help="set the port of the MQTT broker (default: %default) which the program will connect to.")
+#    parser.add_option("--tls-path",action="store",type="string",dest="tls_path", default=config['tls_path'],help="set the tls file path of the MQTT broker (default: %default) which the program will connect to.")
 #    parser.add_option("--timeout",action="store",type="int",dest="timeout", default=0,help="set timeout in msec (default: 0 msec)")
     parser.add_option("-l","--log_level",dest="log_level",default="INFO",help="set log level")    
     return parser
@@ -67,8 +73,9 @@ HISTORY
 def _parse_options():
     parser = _parser()
     (options, args) = parser.parse_args()
-    options.topic_info = 'stage/info/' + options.mqtt_topic
-    options.topic_ctrl = 'stage/ctrl/' + options.mqtt_topic
+    options.topic_info = 'stage/info/' + options.stage_name
+    options.topic_ctrl = 'stage/ctrl/' + options.stage_name
+
     return options, args
 
 def _get_api(options):
@@ -130,18 +137,8 @@ def on_message(client, userdata, msg):
     else:
         logging.warning('VS not available')
 
-def publisher():
-    #logging.info('subscribing ...')
-    client = mqtt.Client()                 # クラスのインスタンス(実体)の作成
-    client.on_connect = on_connect         # 接続時のコールバック関数を登録
-    client.on_disconnect = on_disconnect   # 切断時のコールバックを登録
-    client.on_publish = on_publish         # メッセージ送信時のコールバック
-    client.on_message = on_message
-    logging.info('connecting %s:%s' % (options.mqtt_host, options.mqtt_port))
-    client.connect(options.mqtt_host, options.mqtt_port, 60)  # 接続先は自分自身
-
-    # 通信処理スタート
-    client.loop_start()    # subはloop_forever()だが，pubはloop_start()で起動だけさせる
+def publisher(client):
+    print("publisher...")
     #vsapi = None
     # 永久に繰り返す
     global vsapi
@@ -215,7 +212,18 @@ def main():
     global options
     (options, args) = _parse_options()
     logging.basicConfig(level=options.log_level.upper(), format='%(asctime)s %(levelname)s:%(message)s')
-    publisher()
+    logging.debug(options)
+    client = mqtt.Client()                 # クラスのインスタンス(実体)の作成
+    client.on_connect = on_connect         # 接続時のコールバック関数を登録
+    client.on_disconnect = on_disconnect   # 切断時のコールバックを登録
+    client.on_publish = on_publish         # メッセージ送信時のコールバック
+    client.on_message = on_message
+    #client.tls_set(options.tls_path)
+    logging.info('connecting %s:%s' % (options.mqtt_host, options.mqtt_port))
+    client.connect(options.mqtt_host, options.mqtt_port, 60)  # 接続先は自分自身
+    # 通信処理スタート
+    client.loop_start()    # subはloop_forever()だが，pubはloop_start()で起動だけさせる
+    publisher(client)
     
 
 if __name__ == '__main__':
