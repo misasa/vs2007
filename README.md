@@ -57,3 +57,5 @@ Commands are summarized as:
 # Usage
 
 See online document with option `--help`.
+
+## vs-sentinel
