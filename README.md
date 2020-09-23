@@ -58,9 +58,7 @@ Commands are summarized as:
 
 See online document with option `--help`.
 
-# Remote control with vs-sentinel
-
-## Computer
+# Control a stage from remote
 
 Start VisualStage2007 and lunch vs-sentinel as shown below. Revise configuration file (~/.vs2007rc) when necessary.
 
@@ -95,3 +93,7 @@ Start VisualStage2007 and lunch vs-sentinel as shown below. Revise configuration
     world_origin: ld
     stage_origin: ru
     
+
+Access [machine list](https://database.misasa.okayama-u.ac.jp/machine/) and open an [Edit Machine (ex. SIMS-1280)](https://database.misasa.okayama-u.ac.jp/machine/machines/3/edit) for the machine you want to control (by clicking the gear icon next to the machine name on the list).
+Input the stage name (for example `stage-of-sisyphus-THINK`) and click OK.
+Then you can see the XY position of the stage on web browser in real time.
