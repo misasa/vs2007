@@ -58,4 +58,27 @@ Commands are summarized as:
 
 See online document with option `--help`.
 
-## vs-sentinel
+# Remote control with vs-sentinel
+Start VisualStage2007 and lunch vs-sentinel as shown below. Revise configuration file (~/.vs2007rc) when necessary.
+
+    $ vs start
+    $ vs-sentinel
+    reading |C:\Users\yyachi\.vs2007rc| ...
+    2020-09-23 11:06:38,580 INFO:connecting database.misasa.okayama-u.ac.jp:1883
+    publisher...
+    2020-09-23 11:06:38,667 INFO:Connected with result code 0
+    2020-09-23 11:06:38,677 INFO:subscribe topic |stage/ctrl/stage-of-sisyphus-THINK| to receive stage control command...
+    2020-09-23 11:06:40,536 INFO:getting API...
+    2020-09-23 11:06:40,560 INFO:vsapi GET_STAGE_POSITION -> FAILURE
+    2020-09-23 11:06:40,560 INFO:vsapi GET_MARKER_POSITION -> SUCCESS POINT,-1583.126,-2935.833
+    2020-09-23 11:06:40,561 INFO:publish message {"status": {"isConnected": "false", "isRunning": "true", "isAvailable": "true"}, "position": {"x_world": "-1583.126", "y_world": "-2935.833"}} on topic stage/info/stage-of-sisyphus-THINK
+    2020-09-23 11:06:40,561 INFO:published: 2
+    2020-09-23 11:06:41,561 INFO:vsapi GET_STAGE_POSITION -> FAILURE
+    2020-09-23 11:06:41,562 INFO:vsapi GET_MARKER_POSITION -> SUCCESS POINT,-1583.126,-2935.833
+    2020-09-23 11:06:41,562 INFO:publish message {"status": {"isConnected": "false", "isRunning": "true", "isAvailable": "true"}, "position": {"x_world": "-1583.126", "y_world": "-2935.833"}} on topic stage/info/stage-of-sisyphus-THINK
+    2020-09-23 11:06:41,562 INFO:published: 3
+    2020-09-23 11:06:42,563 INFO:vsapi GET_STAGE_POSITION -> FAILURE
+    2020-09-23 11:06:42,564 INFO:vsapi GET_MARKER_POSITION -> SUCCESS POINT,-1583.126,-2935.833
+    2020-09-23 11:06:42,564 INFO:publish message {"status": {"isConnected": "false", "isRunning": "true", "isAvailable": "true"}, "position": {"x_world": "-1583.126", "y_world": "-2935.833"}} on topic stage/info/stage-of-sisyphus-THINK
+    2020-09-23 11:06:42,564 INFO:published: 4
+    ....
