@@ -1,11 +1,11 @@
 # python package -- vs2007
 
-Provide two commands (`vs` and `vs-api`) that control the program `VisualStage 2007`.
-The two commands enable users to develop a program by talking to `VisualStage 2007`. 
+Provide two commands (`vs`, `vs-api` and `vs-sentinel`) that control the program `VisualStage 2007`.
+These commands enable users to develop a program by talking to `VisualStage 2007`. 
 
 The command `vs` is for starting/stopping the program `VisualStage 2007`, opening/closing its data file, and outputting its adress and attachment. 
 The command `vs-api` is for executing VisualStageAPI as an argument. 
-
+The command `vs-sentinel` is for control `VisualStage 2007` via network.
 See
 [gem package -- visual_stage](https://gitlab.misasa.okayama-u.ac.jp/gems/visual_stage)
 and `vs_attach_image.m` in 
@@ -51,6 +51,7 @@ Commands are summarized as:
 | ------- | --------------------------------- | ---- |
 | vs      | Start and stop VisualStage 2007   |      |
 | vs-api  | Interactive with VisualStage 2007 |      |
+| vs-sentinel  | Control VisualStage 2007 via network |      |
 
 
 # Usage
