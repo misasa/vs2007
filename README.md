@@ -59,10 +59,13 @@ Commands are summarized as:
 See online document with option `--help`.
 
 # Remote control with vs-sentinel
+
+## Computer
+
 Start VisualStage2007 and lunch vs-sentinel as shown below. Revise configuration file (~/.vs2007rc) when necessary.
 
-    $ vs start
-    $ vs-sentinel
+    > vs start
+    > vs-sentinel
     reading |C:\Users\yyachi\.vs2007rc| ...
     2020-09-23 11:06:38,580 INFO:connecting database.misasa.okayama-u.ac.jp:1883
     publisher...
@@ -82,3 +85,13 @@ Start VisualStage2007 and lunch vs-sentinel as shown below. Revise configuration
     2020-09-23 11:06:42,564 INFO:publish message {"status": {"isConnected": "false", "isRunning": "true", "isAvailable": "true"}, "position": {"x_world": "-1583.126", "y_world": "-2935.833"}} on topic stage/info/stage-of-sisyphus-THINK
     2020-09-23 11:06:42,564 INFO:published: 4
     ....
+
+### Example of configuration file
+
+    > cat ~/.vs2007rc
+    ---
+    stage_name: stage-of-sisyphus-THINK
+    vsdata_path: Z:\
+    world_origin: ld
+    stage_origin: ru
+    
