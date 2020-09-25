@@ -16,6 +16,7 @@ default_config = {
 		'stage_name': 'stage-of-' + socket.gethostname(),
 		'mqtt_host': 'database.misasa.okayama-u.ac.jp',
 		'mqtt_port': 1883,
+		'timeout': 5000,
 }
 
 def config():

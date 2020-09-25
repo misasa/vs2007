@@ -46,9 +46,24 @@ SYNOPSIS AND USAGE
   %prog [options]
 
 DESCRIPTION
-  
-EXAMPLE
+    MQTT publisher and subscriber for vs-remote app. This program
+    publishes stage or marker position regulary and receives commands
+    from vs-remote app.
+    Note that this program reads `~/.vs2007rc' for configuration.
+    Set `stage-name' line on the configuration file as below.
 
+    stage-name: myStage
+
+    If you see timeout error, set `timeout'
+    line on the configration file as below and raise the
+    value.  Default setting is 5000 mseconds.
+
+    timeout: 5000  
+
+EXAMPLE
+    CMD> vs-sentinel
+    CMD> vs-sentinel --stage-name myStage
+    CMD> vs-sentinel --stage-name myStage --timeout 8000 
 SEE ALSO
   http://dream.misasa.okayama-u.ac.jp
   https://gitlab.misasa.okayama-u.ac.jp/pythonpackage/vs2007/blob/master/vs2007/command_api.py
@@ -62,12 +77,12 @@ HISTORY
   September 2, 2020: Add Program
 """)
     parser.add_option("-v","--verbose",action="store_true",dest="verbose",default=False,help="make lots of noise")
-    parser.add_option("--stage-name",action="store",type="string",dest="stage_name", default=config['stage_name'],help="set the name of stage to identify the MQTT message (default: '%default') which the program will publish and subscribe to.")
-    parser.add_option("--mqtt-host",action="store",type="string",dest="mqtt_host", default=config['mqtt_host'],help="set the address of the MQTT broker (default: %default) which the program will connect to.")
-    parser.add_option("--mqtt-port",action="store",type="int",dest="mqtt_port", default=config['mqtt_port'],help="set the port of the MQTT broker (default: %default) which the program will connect to.")
+    parser.add_option("--stage-name",action="store",type="string",dest="stage_name",default=config['stage_name'],help="set the name of stage to identify the MQTT message (default: '%default') which the program will publish and subscribe to.")
+    parser.add_option("--mqtt-host",action="store",type="string",dest="mqtt_host",default=config['mqtt_host'],help="set the address of the MQTT broker (default: %default) which the program will connect to.")
+    parser.add_option("--mqtt-port",action="store",type="int",dest="mqtt_port",default=config['mqtt_port'],help="set the port of the MQTT broker (default: %default) which the program will connect to.")
 #    parser.add_option("--tls-path",action="store",type="string",dest="tls_path", default=config['tls_path'],help="set the tls file path of the MQTT broker (default: %default) which the program will connect to.")
-#    parser.add_option("--timeout",action="store",type="int",dest="timeout", default=0,help="set timeout in msec (default: 0 msec)")
-    parser.add_option("-l","--log_level",dest="log_level",default="INFO",help="set log level")    
+    parser.add_option("--timeout",action="store",type="int",dest="timeout",default=config['timeout'],help="set timeout in msec (default: %default)")
+    parser.add_option("-l","--log_level",dest="log_level",default="INFO",help="set log level")
     return parser
 
 def _parse_options():
@@ -124,7 +139,7 @@ def on_message(client, userdata, msg):
         if stage_info["status"]["isConnected"] == "true":
             command = 'SET_STAGE_POSITION POINT,%s,%s' % (data["d_x"], data["d_y"])
         try:
-            output = vsapi.send_command_and_receive_message(command, 1000)
+            output = vsapi.send_command_and_receive_message(command, options.timeout)
             logging.info("vsapi {} -> {}".format(command, output))
             vals = output.split()
             status = vals[0]
@@ -140,7 +155,7 @@ def on_message(client, userdata, msg):
 def publisher(client):
     print("publisher...")
     #vsapi = None
-    # 永久に繰り返す
+                 # 永久に繰り返す
     global vsapi
 
     while True:
@@ -164,7 +179,7 @@ def publisher(client):
 
         command = 'GET_STAGE_POSITION'
         try:
-            output = vsapi.send_command_and_receive_message(command, 1000)
+            output = vsapi.send_command_and_receive_message(command, options.timeout)
             logging.info("vsapi {} -> {}".format(command, output))
             vals = output.split()
             status = vals[0]
@@ -182,7 +197,7 @@ def publisher(client):
                 stage_info['status']['isConnected'] = "false"
                 command = 'GET_MARKER_POSITION'
                 try:
-                    output = vsapi.send_command_and_receive_message(command, 1000)
+                    output = vsapi.send_command_and_receive_message(command, options.timeout)
                     logging.info("vsapi {} -> {}".format(command, output))
                     vals = output.split()
                     status = vals[0]

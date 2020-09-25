@@ -37,7 +37,7 @@ def test_help():
 
 @with_setup(setup, teardown)
 def test_main_with_options():
-    sys.argv = ['vs-sentinel', '-l', 'DEBUG', '--stage-name', 'stage-of-me', '--mqtt-host','mqtt.example.com', '--mqtt-port','8889']
+    sys.argv = ['vs-sentinel', '-l', 'DEBUG', '--stage-name', 'stage-of-me', '--mqtt-host','mqtt.example.com', '--mqtt-port','8889', '--timeout', '5000']
     logging.basicConfig(
         level='INFO', format='%(asctime)s %(levelname)s:%(message)s')
     logger = logging.getLogger('')
@@ -85,7 +85,8 @@ def test_main_with_vs2007rc():
     config = {
         'mqtt_host':'mqtt.example.jp',
         'mqtt_port':2884,
-        'stage_name':'stage-of-myDevice'
+        'stage_name':'stage-of-myDevice',
+        'timeout': 3000
     }
     with open(config_path, 'w') as f:
       yaml.safe_dump(config, f)
