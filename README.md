@@ -89,6 +89,7 @@ Start VisualStage2007 and lunch vs-sentinel as shown below. Revise configuration
     > cat ~/.vs2007rc
     ---
     stage_name: stage-of-sisyphus-THINK
+    timeout: 8000
     vsdata_path: Z:\
     world_origin: ld
     stage_origin: ru
