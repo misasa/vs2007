@@ -1,11 +1,11 @@
 # python package -- vs2007
 
-Provide two commands (`vs` and `vs-api`) that control the program `VisualStage 2007`.
-The two commands enable users to develop a program by talking to `VisualStage 2007`. 
+Provide two commands (`vs`, `vs-api` and `vs-sentinel`) that control the program `VisualStage 2007`.
+These commands enable users to develop a program by talking to `VisualStage 2007`. 
 
 The command `vs` is for starting/stopping the program `VisualStage 2007`, opening/closing its data file, and outputting its adress and attachment. 
 The command `vs-api` is for executing VisualStageAPI as an argument. 
-
+The command `vs-sentinel` is for control `VisualStage 2007` via network.
 See
 [gem package -- visual_stage](https://gitlab.misasa.okayama-u.ac.jp/gems/visual_stage)
 and `vs_attach_image.m` in 
@@ -51,8 +51,49 @@ Commands are summarized as:
 | ------- | --------------------------------- | ---- |
 | vs      | Start and stop VisualStage 2007   |      |
 | vs-api  | Interactive with VisualStage 2007 |      |
+| vs-sentinel  | Control VisualStage 2007 via network |      |
 
 
 # Usage
 
 See online document with option `--help`.
+
+# Control a stage from remote
+
+Start VisualStage2007 and lunch vs-sentinel as shown below. Revise configuration file (~/.vs2007rc) when necessary.
+
+    > vs start
+    > vs-sentinel
+    reading |C:\Users\yyachi\.vs2007rc| ...
+    2020-09-23 11:06:38,580 INFO:connecting database.misasa.okayama-u.ac.jp:1883
+    publisher...
+    2020-09-23 11:06:38,667 INFO:Connected with result code 0
+    2020-09-23 11:06:38,677 INFO:subscribe topic |stage/ctrl/stage-of-sisyphus-THINK| to receive stage control command...
+    2020-09-23 11:06:40,536 INFO:getting API...
+    2020-09-23 11:06:40,560 INFO:vsapi GET_STAGE_POSITION -> FAILURE
+    2020-09-23 11:06:40,560 INFO:vsapi GET_MARKER_POSITION -> SUCCESS POINT,-1583.126,-2935.833
+    2020-09-23 11:06:40,561 INFO:publish message {"status": {"isConnected": "false", "isRunning": "true", "isAvailable": "true"}, "position": {"x_world": "-1583.126", "y_world": "-2935.833"}} on topic stage/info/stage-of-sisyphus-THINK
+    2020-09-23 11:06:40,561 INFO:published: 2
+    2020-09-23 11:06:41,561 INFO:vsapi GET_STAGE_POSITION -> FAILURE
+    2020-09-23 11:06:41,562 INFO:vsapi GET_MARKER_POSITION -> SUCCESS POINT,-1583.126,-2935.833
+    2020-09-23 11:06:41,562 INFO:publish message {"status": {"isConnected": "false", "isRunning": "true", "isAvailable": "true"}, "position": {"x_world": "-1583.126", "y_world": "-2935.833"}} on topic stage/info/stage-of-sisyphus-THINK
+    2020-09-23 11:06:41,562 INFO:published: 3
+    2020-09-23 11:06:42,563 INFO:vsapi GET_STAGE_POSITION -> FAILURE
+    2020-09-23 11:06:42,564 INFO:vsapi GET_MARKER_POSITION -> SUCCESS POINT,-1583.126,-2935.833
+    2020-09-23 11:06:42,564 INFO:publish message {"status": {"isConnected": "false", "isRunning": "true", "isAvailable": "true"}, "position": {"x_world": "-1583.126", "y_world": "-2935.833"}} on topic stage/info/stage-of-sisyphus-THINK
+    2020-09-23 11:06:42,564 INFO:published: 4
+    ....
+
+### Example of configuration file
+
+    > cat ~/.vs2007rc
+    ---
+    stage_name: stage-of-sisyphus-THINK
+    vsdata_path: Z:\
+    world_origin: ld
+    stage_origin: ru
+    
+
+Access [machine list](https://database.misasa.okayama-u.ac.jp/machine/) and open an [Edit Machine (ex. SIMS-1280)](https://database.misasa.okayama-u.ac.jp/machine/machines/3/edit) for the machine you want to control (by clicking the gear icon next to the machine name on the list).
+Input the stage name (for example `stage-of-sisyphus-THINK`) and click OK.
+Then you can see the XY position of the stage on web browser in real time.
