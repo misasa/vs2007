@@ -140,7 +140,7 @@ def on_message(client, userdata, msg):
     if vsapi is not None:
         command = 'SET_MARKER_POSITION POINT,%s,%s' % (data["d_x"], data["d_y"])
         if stage_info["status"]["isConnected"] == "true":
-            command = 'CONTROL_MOVE_STAGE,%s,%s' % (data["d_x"], data["d_y"])
+            command = 'CONTROL_MOVE_STAGE %s,%s' % (data["d_x"], data["d_y"])
         try:
             output = vsapi.send_command_and_receive_message(command, options.timeout)
             logging.info("vsapi {} -> {}".format(command, output))
