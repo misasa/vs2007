@@ -96,7 +96,10 @@ def _parse_options():
 def _get_api(options):
     logging.info("getting API...")
     if vs2007.process.VS2007Process.is_running():
-        return vs2007.api.VS2007API(None, 10)
+        try:
+            return vs2007.api.VS2007API(None, 10)
+        except Exception as e:
+            logging.error(e)
 
 def _clear_api():
     logging.info("clearing API...")
@@ -137,7 +140,7 @@ def on_message(client, userdata, msg):
     if vsapi is not None:
         command = 'SET_MARKER_POSITION POINT,%s,%s' % (data["d_x"], data["d_y"])
         if stage_info["status"]["isConnected"] == "true":
-            command = 'SET_STAGE_POSITION POINT,%s,%s' % (data["d_x"], data["d_y"])
+            command = 'CONTROL_MOVE_STAGE,%s,%s' % (data["d_x"], data["d_y"])
         try:
             output = vsapi.send_command_and_receive_message(command, options.timeout)
             logging.info("vsapi {} -> {}".format(command, output))
@@ -189,9 +192,8 @@ def publisher(client):
             elif status == 'SUCCESS':
                 stage_info['status']['isConnected'] = "true"
                 vv = vals[1].split(',')
-                if vv[0] == 'POINT':
-                    stage_info['position']['x_world'] = vv[1]
-                    stage_info['position']['y_world'] = vv[2]
+                stage_info['position']['x_world'] = vv[0]
+                stage_info['position']['y_world'] = vv[1]
 
             elif status == 'FAILURE':
                 stage_info['status']['isConnected'] = "false"

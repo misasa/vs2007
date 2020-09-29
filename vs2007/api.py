@@ -129,11 +129,12 @@ class VS2007API(object):
 			self.g_hVSWnd = hVSWnd
 
 		if self.g_hVSWnd == None:
-			logging.debug('g_hVSWnd is None')
+			logging.debug('getting Window handle...')
 			self.GetVSHVSWND(timeout)
-		else:
-			logging.debug('g_hVSWnd is %d' % (self.g_hVSWnd))
 
+		if self.g_hVSWnd == None:
+			raise RuntimeError("Could not get window handle.")
+		logging.debug('g_hVSWnd is %d' % (self.g_hVSWnd))
 
 	def send_command_and_receive_message(self, command_line, timeout = 1000):
 		try:
