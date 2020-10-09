@@ -99,7 +99,7 @@ Access [machine list](https://database.misasa.okayama-u.ac.jp/machine/) and open
 Input the stage name (for example `stage-of-sisyphus-THINK`) and click OK.
 Then you can see the XY position of the stage on web browser in real time.
 
-### control via MQTT client
+### control via command line
 Download and install a MQTT client software [mosquitto](http://mosquitto.org/download/)
 To receive current position (and status) of `stage-of-sisyphus-THINK`, issue following command. 
 
