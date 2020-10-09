@@ -105,6 +105,6 @@ To receive current position (and status) of `stage-of-sisyphus-THINK`, issue fol
 
     > mosquitto_sub -h database.misasa.okayama-u.ac.jp -t stage/info/stage-of-sisyphus-THINK
 
-In order to move `stage-of-sisyphus-THINK` to a position, issue following command.
+In order to move the stage `stage-of-sisyphus-THINK` to the specified position (0.0,0.0), issue following command.
 
-    > mosquitto_pub -h database.misasa.okayama-u.ac.jp -t stage/ctrl/stage-of-sisyphus-THINK -m "{\"command\":\"GOTO\",\"d_x\":\"35.893\",\"d_y\":\"139.954\"}"
+    > mosquitto_pub -h database.misasa.okayama-u.ac.jp -t stage/ctrl/stage-of-sisyphus-THINK -m "{\"command\":\"GOTO\",\"d_x\":\"0.0\",\"d_y\":\"0.0\"}"
