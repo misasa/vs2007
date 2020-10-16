@@ -94,7 +94,17 @@ Start VisualStage2007 and lunch vs-sentinel as shown below. Revise configuration
     world_origin: ld
     stage_origin: ru
     
-
+### control via web browser
 Access [machine list](https://database.misasa.okayama-u.ac.jp/machine/) and open an [Edit Machine (ex. SIMS-1280)](https://database.misasa.okayama-u.ac.jp/machine/machines/3/edit) for the machine you want to control (by clicking the gear icon next to the machine name on the list).
 Input the stage name (for example `stage-of-sisyphus-THINK`) and click OK.
 Then you can see the XY position of the stage on web browser in real time.
+
+### control via command line
+Download and install a MQTT client software [mosquitto](http://mosquitto.org/download/)
+To receive current position (and status) of `stage-of-sisyphus-THINK`, issue following command. 
+
+    > mosquitto_sub -h database.misasa.okayama-u.ac.jp -t stage/info/stage-of-sisyphus-THINK
+
+In order to move the stage `stage-of-sisyphus-THINK` to the specified position (for example [0.0, 0.0]), issue following command.
+
+    > mosquitto_pub -h database.misasa.okayama-u.ac.jp -t stage/ctrl/stage-of-sisyphus-THINK -m "{\"command\":\"GOTO\",\"d_x\":\"0.0\",\"d_y\":\"0.0\"}"
