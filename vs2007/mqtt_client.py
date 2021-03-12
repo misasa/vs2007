@@ -4,38 +4,46 @@ import sys, os
 import logging
 import vs2007
 import vs2007.process
-import vs2007.api
+import vs2007.messenger
+#import vs2007.api
+#import vs2007.comm
+#import vs2007.get_position
+#import vs2007.set_position
 import socket
 import select
 from threading import Thread
 import paho.mqtt.client as mqtt
 import json
 import datetime
+import time
 from time import sleep 
 
 import signal
 signal.signal(signal.SIGINT,signal.SIG_DFL)
 
 prog = "vs-sentinel"
+_status = {
+            "isStageConnected":"false",
+            "isVSRunning":"false",
+            "isAPIAvailable":"false",
+            "isStageMoving":"false",
+            "dataname":"",
+}
+_position = {
+              "x_world":"",
+              "y_world":"",
+}
+stage_info = {	"status": _status,
+			          "position": _position
+}
 
-stage_info = {	"status":{
-                            "isConnected":"false",
-			    			"isRunning":"false",
-			    		},
-			    "position":{
-                            "x_world":"",
-                            "y_world":"",
-                        },
-            }
-
-vsapi = None
+vs_handle = None
 is_connected = False
 config = None
 process = None
-#config = vs2007.config()
-#config = vs2007.Config().config
+vs_handler = vs2007.messenger.VSHandler()
+
 options = {}
-#def _config():
 
 def _process():
     return vs2007.process.VS2007Process()
@@ -92,70 +100,64 @@ def _parse_options():
     parser = _parser()
     (options, args) = parser.parse_args()
     options.topic_info = 'stage/info/' + options.stage_name
+    options.topic_status = 'stage/status/' + options.stage_name
+    options.topic_position = 'stage/position/' + options.stage_name
     options.topic_ctrl = 'stage/ctrl/' + options.stage_name
 
     return options, args
 
-def _get_api(options):
-    logging.info("getting API...")
-    if vs2007.process.VS2007Process.is_running():
-        try:
-            return vs2007.api.VS2007API(None, 10)
-        except Exception as e:
-            logging.error(e)
+def _get_vs_handle(options):
+  global vs_handler
+  return vs_handler.get_vs_handle()
 
-def _clear_api():
-    logging.info("clearing API...")
-    vs2007.api.VS2007API.g_hVSWnd = None
-    vs2007.process.VS2007Process.pid = None
-    
-def _send_command(command, timeout = 0):
-    if vs2007.process.VS2007Process.is_running():
-        vs2007p = vs2007.process.VS2007Process()
-        return vs2007p.send_command(command, timeout)
-def _get_position(stage_info):
-    global vsapi
+def _thread_move(handle, data, client, options):
+    global stage_info
+    global is_connected
 
-    command = 'GET_STAGE_POSITION'
-    try:
-        output = vsapi.send_command_and_receive_message(command, options.timeout)
-        logging.info("vsapi {} -> {}".format(command, output))
+    if (vs2007.process.VS2007Process.is_running() and (handle is not None)):
+      _w = vs2007.messenger.Messenger(handle)
+      stage_info['status']['isStageMoving'] = "true"
+      command = 'CONTROL_MOVE_STAGE %s,%s' % (data["d_x"], data["d_y"])
+      t_start = time.time()
+      output = _w.command(command)
+      _dt = time.time() - t_start
+      line = "{0} -> {1} (response: {2:.2f} sec)".format(command, output, _dt)
+      logging.info(line)
+      _w.close()
+      vals = output.split()
+      status = vals[0]
+      if status == 'SUCCESS':
+          stage_info['status']['isStageConnected'] = "true"
+      elif status == 'FAILURE':
+          stage_info['status']['isStageConnected'] = "false"
+      stage_info['status']['isStageMoving'] = "false"
+      publish_message(client, options.topic_info, { "command": command, "output":output, "response": _dt})
+
+def _thread_position(handle, client, options):
+    logging.info("starting thread_position...")
+    if (vs2007.process.VS2007Process.is_running() and (handle is not None)):
+      _w = vs2007.messenger.Messenger(handle)
+      while True:
+        command = 'GET_STAGE_POSITION'
+        t_start = time.time()
+        output = _w.command(command)
+        _dt = time.time() - t_start
+        line = "{0} -> {1} (response: {2:.2f} sec)".format(command, output, _dt)
+        logging.info(line)
         vals = output.split()
         status = vals[0]
-        if status == 'TIMEOUT':
-            vsapi = None
-            _clear_api()
-        elif status == 'SUCCESS':
-            stage_info['status']['isConnected'] = "true"
+        if status == 'SUCCESS':
+            stage_info['status']['isStageConnected'] = "true"
             vv = vals[1].split(',')
             stage_info['position']['x_world'] = vv[0]
             stage_info['position']['y_world'] = vv[1]
 
         elif status == 'FAILURE':
-            stage_info['status']['isConnected'] = "false"
-            command = 'GET_MARKER_POSITION'
-            try:
-                output = vsapi.send_command_and_receive_message(command, options.timeout)
-                logging.info("vsapi {} -> {}".format(command, output))
-                vals = output.split()
-                status = vals[0]
-                if status == 'TIMEOUT':
-                    vsapi = None
-                    _clear_api()
-                elif status == 'SUCCESS':
-                    vv = vals[1].split(',')
-                    if vv[0] == 'POINT':
-                        stage_info['position']['x_world'] = vv[1]
-                        stage_info['position']['y_world'] = vv[2]
-            except Exception as e:
-                print('Exception occurred |%s|...' % command, file=sys.stderr)
-                print(e, file=sys.stderr)
+            stage_info['status']['isStageConnected'] = "false"
 
-    except Exception as e:
-        print('Exception occurred |%s|...' % command, file=sys.stderr)
-        print(e, file=sys.stderr)
-    dt_now = datetime.datetime.now()
-    stage_info["position"]["updated_at"] = dt_now.strftime('%Y-%m-%dT%H:%M:%S')
+        publish_message(client, options.topic_position, _position)
+        publish_message(client, options.topic_info, { "command": command, "output":output, "response": _dt})
+        sleep(1)
 
 # ブローカーに接続できたときの処理
 def on_connect(client, userdata, flag, rc):
@@ -178,52 +180,36 @@ def on_disconnect(client, userdata, flag, rc):
 
 # publishが完了したときの処理
 def on_publish(client, userdata, mid):
-    logging.info("published: {0}".format(mid))
+    logging.debug("published: {0}".format(mid))
 
 # メッセージが届いたときの処理
 def on_message(client, userdata, msg):
     # msg.topicにトピック名が，msg.payloadに届いたデータ本体が入っている
     logging.info("Received message '" + str(msg.payload) + "' on topic '" + msg.topic + "' with QoS " + str(msg.qos))
     data = json.loads(msg.payload)
-    global vsapi
+    global vs_handle
 
-    if vsapi is None:
-        logging.debug('_get_api...')
-        vsapi = _get_api(options)
-        logging.debug('api:{}'.format(vsapi))
-
-    if vsapi is not None:
-        command = 'SET_MARKER_POSITION POINT,%s,%s' % (data["d_x"], data["d_y"])
-        if stage_info["status"]["isConnected"] == "true":
-            command = 'CONTROL_MOVE_STAGE %s,%s' % (data["d_x"], data["d_y"])
-        try:
-            output = vsapi.send_command_and_receive_message(command, options.timeout)
-            logging.info("vsapi {} -> {}".format(command, output))
-            vals = output.split()
-            status = vals[0]
-            if status == 'TIMEOUT':
-                vsapi = None
-                _clear_api()
-        except Exception as e:
-            print('Exception occurred |%s|...' % command, file=sys.stderr)
-            print(e, file=sys.stderr)
-    else:
-        logging.warning('VS not available')
+    if vs_handle is not None:
+        thread1 = Thread(target=_thread_move, args=(vs_handle, data, client, options,))
+        thread1.setDaemon(True)
+        thread1.start()
 
 def publisher(client):
-    print("publisher...")
-    #vsapi = None
-    # 永久に繰り返す
     global is_connected
-    global vsapi
+    global vs_handle
     global process
+
     while True:
         if not is_connected:
             sleep(1)
             continue
-
+        stage_info['position']['x_world'] = ""
+        stage_info['position']['y_world'] = ""
+        stage_info["status"]["isVSRunning"] = "false"
+        stage_info["status"]["isAPIAvailable"] = "false"
+        stage_info["status"]["dataname"] = ""
         if vs2007.process.VS2007Process.is_running():
-            stage_info["status"]["isRunning"] = "true"
+            stage_info["status"]["isVSRunning"] = "true"
             if process is None:
                 process = _process()
             if process and process.is_file_opened:
@@ -231,39 +217,45 @@ def publisher(client):
         else:
             stage_info["status"]["isRunning"] = "false"
             process = None
-        if vsapi is None:
-            logging.debug('_get_api...')
-            vsapi = _get_api(options)
-            logging.debug('api:{}'.format(vsapi))
-            stage_info["status"]["isAvailable"] = "false"
-            #if vsapi is None and is_connected:
-            #    json_message = json.dumps( stage_info )
-            #    client.publish(options.topic_info,json_message)
-            #    logging.info("publish message {} on topic {}".format(json_message, options.topic_info))
-            #    sleep(1)
-            #    continue
-        else:
-            stage_info["status"]["isAvailable"] = "true"
-            _get_position(stage_info)
-        dt_now = datetime.datetime.now()
-        stage_info["status"]["updated_at"] = dt_now.strftime('%Y-%m-%dT%H:%M:%S')
-        json_message = json.dumps( stage_info )
-        rc = client.publish(options.topic_info,json_message)
-        if rc[0] == mqtt.MQTT_ERR_SUCCESS:
-            logging.info("publish message {} on topic {}".format(json_message, options.topic_info))
-        else:
-            logging.info(mqtt.error_string(rc[0]))
-            if rc[0] == mqtt.MQTT_ERR_NO_CONN:
-                is_connected = False
-                logging.info("waiting connection...")
-        sleep(1)
+            vs2007.process.VS2007Process.pid = None
+            vs_handle = None
 
+        if vs_handle is None:
+          vs_handle = _get_vs_handle(options)
+          if vs_handle is not None:
+            thread1 = Thread(target=_thread_position, args=(vs_handle, client, options,))
+            thread1.setDaemon(True)
+            thread1.start()
+            stage_info["status"]["isAPIAvailable"] = "true"
+          else:
+            stage_info["status"]["isAPIAvailable"] = "false"
+            stage_info["status"]["isStageConnected"] = "false"
+            stage_info['position']['x_world'] = ""
+            stage_info['position']['y_world'] = ""
+            publish_message(client, options.topic_position, _position)
+        else:
+          stage_info["status"]["isAPIAvailable"] = "true"        
+        publish_message(client, options.topic_status, _status)
+        sleep(1)
+def publish_message(client, topic, message):
+  message["updated_at"] = datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%S')
+  json_message = json.dumps( message )
+  rc = client.publish(topic, json_message)
+  if rc[0] == mqtt.MQTT_ERR_SUCCESS:
+      logging.info("publish message {} on topic {}".format(json_message, topic))
+  else:
+      logging.info(mqtt.error_string(rc[0]))
+      if rc[0] == mqtt.MQTT_ERR_NO_CONN:
+          is_connected = False
+          logging.info("waiting connection...")
+  
 
 def main():
     global options
     (options, args) = _parse_options()
     logging.basicConfig(level=options.log_level.upper(), format='%(asctime)s %(levelname)s:%(message)s')
     logging.debug(options)
+
     client = mqtt.Client()                 # クラスのインスタンス(実体)の作成
     client.on_connect = on_connect         # 接続時のコールバック関数を登録
     client.on_disconnect = on_disconnect   # 切断時のコールバックを登録
@@ -273,12 +265,10 @@ def main():
     logging.info('connecting %s:%s' % (options.mqtt_host, options.mqtt_port))
     try:
         client.connect(options.mqtt_host, options.mqtt_port, 60)  # 接続先は自分自身
-        # 通信処理スタート
-        client.loop_start()    # subはloop_forever()だが，pubはloop_start()で起動だけさせる
+        client.loop_start()
         publisher(client)
     except Exception as e:
         print(e, file=sys.stderr)
     
-
 if __name__ == '__main__':
     main()

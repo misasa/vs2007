@@ -43,8 +43,11 @@ class VS2007API(object):
 			return 0
 		elif message == VS2007API.g_uiGWM and wParam == VS2007API.VS_GET_HWND and lParam != hWnd:
 			logging.debug('VS2007API.g_uiGWM')
-			logging.debug('receive g_hVSWnd %d' % lParam)
-			VS2007API.g_hVSWnd = lParam
+			if VS2007API.g_hVSWnd == None:
+				logging.debug('receive g_hVSWnd %d' % lParam)
+				VS2007API.g_hVSWnd = lParam
+			else:
+				logging.debug('receive g_hVSWnd %d ignored (existing g_hVSWnd %d)' % (lParam, VS2007API.g_hVSWnd))
 		else:
 			logging.debug('ELSE %d' % message)
 			return win32gui.DefWindowProc(hWnd, message, wParam, lParam)
