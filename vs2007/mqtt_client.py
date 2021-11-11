@@ -5,6 +5,7 @@ import logging
 import vs2007
 import vs2007.process
 import vs2007.messenger
+from vs2007._version import __version__ as VERSION
 #import vs2007.api
 #import vs2007.comm
 #import vs2007.get_position
@@ -254,8 +255,9 @@ def main():
     global options
     (options, args) = _parse_options()
     logging.basicConfig(level=options.log_level.upper(), format='%(asctime)s %(levelname)s:%(message)s')
+    logging.info("version %s" % VERSION)
     logging.debug(options)
-
+    
     client = mqtt.Client()                 # クラスのインスタンス(実体)の作成
     client.on_connect = on_connect         # 接続時のコールバック関数を登録
     client.on_disconnect = on_disconnect   # 切断時のコールバックを登録
