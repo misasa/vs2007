@@ -7,7 +7,7 @@ The command `vs` is for starting/stopping the program `VisualStage 2007`, openin
 The command `vs-api` is for executing VisualStageAPI as an argument. 
 The command `vs-sentinel` is for control `VisualStage 2007` via network.
 See
-[gem package -- visual_stage](https://gitlab.misasa.okayama-u.ac.jp/gems/visual_stage)
+[gem package -- visual_stage](https://github.com/misasa/visual_stage)
 and `vs_attach_image.m` in 
 [Matlab script -- VisualSpots](http://multimed.misasa.okayama-u.ac.jp/repository/matlab/)
 that refer to this package.
@@ -27,12 +27,12 @@ Include "C:\Python37\;C:\Python37\Scripts\" in %PATH%.
 
 Install this package as Administrator as:
 
-    ADMIN.CMD> pip install git+https://gitlab.misasa.okayama-u.ac.jp/pythonpackage/vs2007/-/archive/master/vs2007-master.zip
+    ADMIN.CMD> pip install git+https://github.com/misasa/vs2007/-/archive/master/vs2007-master.zip
 
-or download [vs2007-master.zip](https://gitlab.misasa.okayama-u.ac.jp/pythonpackage/vs2007/-/archive/master/vs2007-master.zip) to a local directory and install it as Administrator as:
+or download [vs2007-master.zip](https://github.com/misasa/vs2007/-/archive/master/vs2007-master.zip) to a local directory and install it as Administrator as:
 
     $ cd ~/Downloads/
-    $ wget https://gitlab.misasa.okayama-u.ac.jp/pythonpackage/vs2007/-/archive/master/vs2007-master.zip
+    $ wget https://github.com/misasa/vs2007/-/archive/master/vs2007-master.zip
     ADMIN.CMD> cd %USERPROFILE%\Downloads\
     ADMIN.CMD> pip list
     ADMIN.CMD> pip uninstall vs2007
