@@ -78,7 +78,7 @@ EXAMPLE
     CMD> vs-sentinel --stage-name myStage --timeout 8000 
 SEE ALSO
   http://dream.misasa.okayama-u.ac.jp
-  https://gitlab.misasa.okayama-u.ac.jp/pythonpackage/vs2007/blob/master/vs2007/command_api.py
+  https://github.com/misasa/vs2007/blob/master/vs2007/command_api.py
 
 IMPLEMENTATION
   Orochi, version 9
