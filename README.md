@@ -27,12 +27,12 @@ Include "C:\Python37\;C:\Python37\Scripts\" in %PATH%.
 
 Install this package as Administrator as:
 
-    ADMIN.CMD> pip install git+https://github.com/misasa/vs2007/-/archive/master/vs2007-master.zip
+    ADMIN.CMD> pip install git+https://github.com/misasa/vs2007/archive/refs/heads/master.zip
 
-or download [vs2007-master.zip](https://github.com/misasa/vs2007/-/archive/master/vs2007-master.zip) to a local directory and install it as Administrator as:
+or download [vs2007-master.zip](https://github.com/misasa/vs2007/archive/refs/heads/master.zip) to a local directory and install it as Administrator as:
 
     $ cd ~/Downloads/
-    $ wget https://github.com/misasa/vs2007/-/archive/master/vs2007-master.zip
+    $ wget https://github.com/misasa/vs2007/archive/refs/heads/master.zip
     ADMIN.CMD> cd %USERPROFILE%\Downloads\
     ADMIN.CMD> pip list
     ADMIN.CMD> pip uninstall vs2007
